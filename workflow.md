@@ -32,7 +32,7 @@ The Amazon product research system follows a **4-stage linear pipeline with para
 **Skills Activated:** `amazon-product-research`, `amazon-supplement-facts-extraction`, `amazon-product-scraping`
 
 ### Input
-- Jungle Scout / Helium 10 CSV exports
+- 卖家精灵数据 CSV exports
 - Amazon category ASIN lists
 - Competitor tag data
 

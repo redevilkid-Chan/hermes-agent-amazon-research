@@ -49,7 +49,7 @@
 ## Skill Catalog
 
 ### 📦 亚马逊选品全链路
-**amazon-product-research** — Jungle Scout → BCG 矩阵 → 战略建议 → DeckOS 报告的端到端流水线
+**amazon-product-research** — 卖家精灵 → BCG 矩阵 → 战略建议 → DeckOS 报告的端到端流水线
 
 ### 📝 Apple Notes
 **apple-notes** — macOS 备忘录 CLI 操作
