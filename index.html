@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Agent — Amazon Research System | 亚马逊智能选品系统</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0d1117;
+  color: #f0f6fc;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 60px 24px 40px; }
+.hero { text-align: center; margin-bottom: 60px; }
+.hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+.hero h1 span { color: #58a6ff; }
+.hero .sub { color: #8b949e; font-size: 16px; max-width: 600px; margin: 0 auto 24px; }
+.hero .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.badge {
+  background: #161b22; border: 1px solid #30363d;
+  border-radius: 20px; padding: 6px 16px;
+  font-size: 13px; color: #8b949e;
+}
+.badge.highlight { border-color: #58a6ff; color: #58a6ff; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 60px; }
+.stat-card {
+  background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+  padding: 24px; text-align: center;
+}
+.stat-card .num { font-size: 32px; font-weight: 800; }
+.stat-card .num.blue { color: #58a6ff; }
+.stat-card .num.green { color: #3fb950; }
+.stat-card .num.orange { color: #f78166; }
+.stat-card .label { color: #8b949e; font-size: 13px; margin-top: 6px; }
+
+.lang-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 60px; }
+.lang-card {
+  background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+  padding: 32px; text-decoration: none; color: inherit;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.lang-card:hover { border-color: #58a6ff; transform: translateY(-2px); }
+.lang-card h2 { font-size: 22px; margin-bottom: 10px; }
+.lang-card h2.zh { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; }
+.lang-card p { color: #8b949e; font-size: 14px; }
+.lang-card .arrow { color: #58a6ff; font-size: 18px; margin-top: 12px; display: inline-block; }
+
+.links { margin-bottom: 60px; }
+.links h2 { font-size: 20px; margin-bottom: 16px; }
+.link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.link-card {
+  display: block; background: #161b22; border: 1px solid #30363d; border-radius: 10px;
+  padding: 18px 20px; text-decoration: none; color: inherit; transition: border-color 0.2s;
+}
+.link-card:hover { border-color: #58a6ff; }
+.link-card .icon { font-size: 20px; margin-right: 8px; }
+.link-card .title { font-weight: 600; font-size: 15px; }
+.link-card .desc { color: #8b949e; font-size: 12px; margin-top: 4px; }
+
+.footer { text-align: center; color: #484f58; font-size: 12px; border-top: 1px solid #21262d; padding-top: 30px; }
+.footer strong { color: #8b949e; }
+
+@media (max-width: 640px) {
+  .lang-section { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 26px; }
+  .container { padding: 40px 16px 30px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Hermes Agent<br><span>Amazon Research System</span></h1>
+    <p class="sub">AI 驱动的亚马逊全链路选品与市场战略分析系统。多 Agent 协作 · BCG 矩阵 · DeckOS 专业演示 · 14 个自建 Skill。</p>
+    <div class="badges">
+      <span class="badge highlight">DeepSeek V4 Pro</span>
+      <span class="badge">MiniMax</span>
+      <span class="badge">14 Skills</span>
+      <span class="badge">3 品类</span>
+      <span class="badge">13+ 竞品/品类</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="num orange">¥104</div>
+      <div class="label">8 天 API 消费</div>
+    </div>
+    <div class="stat-card">
+      <div class="num blue">278万</div>
+      <div class="label">输出 Token</div>
+    </div>
+    <div class="stat-card">
+      <div class="num green">4,820</div>
+      <div class="label">API 请求</div>
+    </div>
+    <div class="stat-card">
+      <div class="num blue">36x</div>
+      <div class="label">效率提升</div>
+    </div>
+  </div>
+
+  <!-- Language cards -->
+  <div class="lang-section">
+    <a href="README_CN.md" class="lang-card">
+      <h2 class="zh">🇨🇳 中文文档</h2>
+      <p>完整项目介绍、多 Agent 架构、Skill 体系、API 消费证明</p>
+      <span class="arrow">→ 阅读中文版</span>
+    </a>
+    <a href="README.md" class="lang-card">
+      <h2>🇺🇸 English Docs</h2>
+      <p>Full architecture, multi-Agent workflow, skills ecosystem, billing proof</p>
+      <span class="arrow">→ Read in English</span>
+    </a>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="links">
+    <h2>📂 快速访问</h2>
+    <div class="link-grid">
+      <a href="billing-summary.html" class="link-card">
+        <span class="icon">💰</span>
+        <span class="title">API 消费看板</span>
+        <div class="desc">DeepSeek 8 天账单可视化</div>
+      </a>
+      <a href="workflow.md" class="link-card">
+        <span class="icon">🧠</span>
+        <span class="title">多 Agent 工作流</span>
+        <div class="desc">四阶段长链推理架构</div>
+      </a>
+      <a href="reports/" class="link-card">
+        <span class="icon">📊</span>
+        <span class="title">分析报告</span>
+        <div class="desc">BCG 矩阵 + 竞品深度分析</div>
+      </a>
+      <a href="decks/" class="link-card">
+        <span class="icon">📽️</span>
+        <span class="title">DeckOS 演示</span>
+        <div class="desc">42 页专业 HTML 投影片</div>
+      </a>
+      <a href="skills/" class="link-card">
+        <span class="icon">🛠</span>
+        <span class="title">Skill 体系</span>
+        <div class="desc">14 个自建专项 Skill</div>
+      </a>
+      <a href="https://github.com/redevilkid-Chan/hermes-agent-amazon-research" class="link-card">
+        <span class="icon">🔗</span>
+        <span class="title">GitHub 仓库</span>
+        <div class="desc">查看完整源码</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <strong>Hermes Agent</strong> · DeepSeek V4 Pro · MiniMax · 
+    Xiaomi MiMo Orbit 100T Creator Incentive<br>
+    Built with ❤️ for AI-driven creators
+  </div>
+
+</div>
+</body>
+</html>
