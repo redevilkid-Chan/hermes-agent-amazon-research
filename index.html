@@ -3,167 +3,314 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hermes Agent — Amazon Research System | 亚马逊智能选品系统</title>
+<title>Hermes Agent — Amazon AI Research System | 亚马逊智能选品系统</title>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #fafbfc;
+  --bg-card: #ffffff;
+  --text: #1a1a2e;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --accent: #3b5ccc;
+  --accent-light: #e8edfb;
+  --green: #10b981;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --border: #e5e7eb;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,.06);
+  --radius: 10px;
+  --radius-lg: 16px;
+}
 body {
-  background: #0d1117;
-  color: #f0f6fc;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Inter", sans-serif;
   line-height: 1.6;
-  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
-.container { max-width: 960px; margin: 0 auto; padding: 60px 24px 40px; }
-.hero { text-align: center; margin-bottom: 60px; }
-.hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
-.hero h1 span { color: #58a6ff; }
-.hero .sub { color: #8b949e; font-size: 16px; max-width: 600px; margin: 0 auto 24px; }
-.hero .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-.badge {
-  background: #161b22; border: 1px solid #30363d;
-  border-radius: 20px; padding: 6px 16px;
-  font-size: 13px; color: #8b949e;
-}
-.badge.highlight { border-color: #58a6ff; color: #58a6ff; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 60px; }
-.stat-card {
-  background: #161b22; border: 1px solid #30363d; border-radius: 12px;
-  padding: 24px; text-align: center;
-}
-.stat-card .num { font-size: 32px; font-weight: 800; }
-.stat-card .num.blue { color: #58a6ff; }
-.stat-card .num.green { color: #3fb950; }
-.stat-card .num.orange { color: #f78166; }
-.stat-card .label { color: #8b949e; font-size: 13px; margin-top: 6px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-.lang-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 60px; }
-.lang-card {
-  background: #161b22; border: 1px solid #30363d; border-radius: 12px;
-  padding: 32px; text-decoration: none; color: inherit;
-  transition: border-color 0.2s, transform 0.2s;
-}
-.lang-card:hover { border-color: #58a6ff; transform: translateY(-2px); }
-.lang-card h2 { font-size: 22px; margin-bottom: 10px; }
-.lang-card h2.zh { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; }
-.lang-card p { color: #8b949e; font-size: 14px; }
-.lang-card .arrow { color: #58a6ff; font-size: 18px; margin-top: 12px; display: inline-block; }
+.container { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
 
-.links { margin-bottom: 60px; }
-.links h2 { font-size: 20px; margin-bottom: 16px; }
-.link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+/* ── Header ── */
+header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 1040px; margin: 0 auto; padding: 14px 24px;
+}
+.logo { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -.3px; }
+.logo span { color: var(--accent); }
+.lang-switch { display: flex; gap: 4px; font-size: 14px; }
+.lang-switch a {
+  padding: 6px 16px; border-radius: 20px; color: var(--text-secondary);
+  transition: all .15s; font-weight: 500;
+}
+.lang-switch a:hover { background: var(--accent-light); color: var(--accent); text-decoration: none; }
+.lang-switch a.active { background: var(--accent); color: #fff; }
+
+/* ── Hero ── */
+.hero { padding: 80px 0 60px; text-align: center; }
+.hero .tag {
+  display: inline-block; background: var(--accent-light); color: var(--accent);
+  padding: 5px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  margin-bottom: 20px; letter-spacing: .3px;
+}
+.hero h1 { font-size: 44px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; letter-spacing: -1px; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero .desc { font-size: 17px; color: var(--text-secondary); max-width: 620px; margin: 0 auto 32px; }
+.hero .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  transition: all .15s; cursor: pointer; border: none;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #2d4db0; text-decoration: none; }
+.btn-outline { background: var(--bg-card); color: var(--accent); border: 1.5px solid var(--accent); }
+.btn-outline:hover { background: var(--accent-light); text-decoration: none; }
+
+/* ── Stats Bar ── */
+.stats-section { padding: 0 0 80px; }
+.stats-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+}
+.stat-item {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 28px 24px; text-align: center;
+  box-shadow: var(--shadow); transition: transform .15s, box-shadow .15s;
+}
+.stat-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.stat-item .num { font-size: 40px; font-weight: 800; letter-spacing: -1px; line-height: 1; margin-bottom: 8px; }
+.stat-item .num.accent { color: var(--accent); }
+.stat-item .num.green { color: var(--green); }
+.stat-item .num.orange { color: var(--orange); }
+.stat-item .label { font-size: 13px; color: var(--text-tertiary); }
+.stat-item .sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+/* ── Flowchart ── */
+.flow-section { padding: 0 0 80px; }
+.flow-section h2 { text-align: center; font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.5px; }
+.flow-section .section-sub { text-align: center; color: var(--text-secondary); font-size: 15px; margin-bottom: 48px; }
+
+.flowchart {
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: 0; flex-wrap: wrap; position: relative;
+}
+.flow-node {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px 22px;
+  width: 220px; text-align: center; position: relative;
+  box-shadow: var(--shadow); transition: transform .15s, box-shadow .15s;
+}
+.flow-node:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.flow-node .step { 
+  display: inline-block; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent); color: #fff; font-size: 13px; font-weight: 700;
+  line-height: 28px; margin-bottom: 12px;
+}
+.flow-node h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.flow-node p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+.flow-arrow {
+  display: flex; align-items: center; padding: 0 8px;
+  color: var(--accent); font-size: 22px; font-weight: 300;
+  flex-shrink: 0; align-self: center;
+}
+.flow-arrow::before { content: "→"; }
+
+/* Orchestrator bar */
+.orchestrator {
+  text-align: center; margin-bottom: 32px;
+}
+.orchestrator .badge {
+  display: inline-block; background: var(--accent); color: #fff;
+  padding: 8px 24px; border-radius: 24px; font-size: 14px; font-weight: 600;
+  letter-spacing: .2px;
+}
+
+/* ── Quick Links ── */
+.links-section { padding: 0 0 80px; }
+.links-section h2 { text-align: center; font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.5px; }
+.links-section .section-sub { text-align: center; color: var(--text-secondary); font-size: 15px; margin-bottom: 36px; }
+.link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .link-card {
-  display: block; background: #161b22; border: 1px solid #30363d; border-radius: 10px;
-  padding: 18px 20px; text-decoration: none; color: inherit; transition: border-color 0.2s;
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 22px; text-decoration: none; color: inherit;
+  box-shadow: var(--shadow); transition: all .15s;
 }
-.link-card:hover { border-color: #58a6ff; }
-.link-card .icon { font-size: 20px; margin-right: 8px; }
-.link-card .title { font-weight: 600; font-size: 15px; }
-.link-card .desc { color: #8b949e; font-size: 12px; margin-top: 4px; }
+.link-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); text-decoration: none; transform: translateY(-2px); }
+.link-card .card-icon { font-size: 24px; }
+.link-card .card-title { font-weight: 700; font-size: 15px; }
+.link-card .card-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
 
-.footer { text-align: center; color: #484f58; font-size: 12px; border-top: 1px solid #21262d; padding-top: 30px; }
-.footer strong { color: #8b949e; }
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border); padding: 32px 0;
+  text-align: center; color: var(--text-tertiary); font-size: 12px;
+}
+footer strong { color: var(--text-secondary); }
+footer .footer-links { margin-bottom: 8px; display: flex; gap: 16px; justify-content: center; }
+footer .footer-links a { color: var(--text-secondary); font-size: 12px; }
 
-@media (max-width: 640px) {
-  .lang-section { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 26px; }
-  .container { padding: 40px 16px 30px; }
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 30px; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .link-grid { grid-template-columns: 1fr 1fr; }
+  .flowchart { flex-direction: column; align-items: center; gap: 12px; }
+  .flow-arrow { transform: rotate(90deg); }
+  .flow-node { width: 100%; max-width: 320px; }
+}
+@media (max-width: 480px) {
+  .stats-bar { grid-template-columns: 1fr; }
+  .link-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
-<div class="container">
+
+<header>
+  <div class="header-inner">
+    <div class="logo">Hermes<span>Agent</span></div>
+    <div class="lang-switch">
+      <a href="README.md">English</a>
+      <a href="README.zh-CN.md" class="active">中文文档</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
 
   <!-- Hero -->
-  <div class="hero">
-    <h1>Hermes Agent<br><span>Amazon Research System</span></h1>
-    <p class="sub">AI 驱动的亚马逊全链路选品与市场战略分析系统。多 Agent 协作 · BCG 矩阵 · DeckOS 专业演示 · 14 个自建 Skill。</p>
-    <div class="badges">
-      <span class="badge highlight">DeepSeek V4 Pro</span>
-      <span class="badge">MiniMax</span>
-      <span class="badge">14 Skills</span>
-      <span class="badge">3 品类</span>
-      <span class="badge">13+ 竞品/品类</span>
+  <section class="hero">
+    <div class="tag">Xiaomi MiMo Orbit · 百万亿 Token 创造者激励</div>
+    <h1>AI 驱动的<em>亚马逊全链路</em><br>选品与战略分析系统</h1>
+    <p class="desc">多 Agent 协作 · BCG 矩阵 · DeckOS 专业演示 · 14 自建 Skill。单品类从 3 天缩短至 2 小时，日均消耗 30-60 万 Token。</p>
+    <div class="actions">
+      <a href="README.zh-CN.md" class="btn btn-primary">📖 阅读完整文档</a>
+      <a href="https://github.com/redevilkid-Chan/hermes-agent-amazon-research" class="btn btn-outline">🔗 GitHub 仓库</a>
     </div>
-  </div>
+  </section>
 
   <!-- Stats -->
-  <div class="stats">
-    <div class="stat-card">
-      <div class="num orange">¥104</div>
-      <div class="label">8 天 API 消费</div>
+  <section class="stats-section">
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="num orange">¥104</div>
+        <div class="label">8 天 API 消费</div>
+        <div class="sub">DeepSeek V4 Pro</div>
+      </div>
+      <div class="stat-item">
+        <div class="num accent">278万</div>
+        <div class="label">输出 Token</div>
+        <div class="sub">日均 35 万</div>
+      </div>
+      <div class="stat-item">
+        <div class="num green">4,820</div>
+        <div class="label">API 请求</div>
+        <div class="sub">日均 602 次</div>
+      </div>
+      <div class="stat-item">
+        <div class="num accent">36×</div>
+        <div class="label">效率提升</div>
+        <div class="sub">3 天 → 2 小时</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="num blue">278万</div>
-      <div class="label">输出 Token</div>
-    </div>
-    <div class="stat-card">
-      <div class="num green">4,820</div>
-      <div class="label">API 请求</div>
-    </div>
-    <div class="stat-card">
-      <div class="num blue">36x</div>
-      <div class="label">效率提升</div>
-    </div>
-  </div>
+  </section>
 
-  <!-- Language cards -->
-  <div class="lang-section">
-    <a href="README_CN.md" class="lang-card">
-      <h2 class="zh">🇨🇳 中文文档</h2>
-      <p>完整项目介绍、多 Agent 架构、Skill 体系、API 消费证明</p>
-      <span class="arrow">→ 阅读中文版</span>
-    </a>
-    <a href="README.md" class="lang-card">
-      <h2>🇺🇸 English Docs</h2>
-      <p>Full architecture, multi-Agent workflow, skills ecosystem, billing proof</p>
-      <span class="arrow">→ Read in English</span>
-    </a>
-  </div>
+  <!-- Flowchart -->
+  <section class="flow-section">
+    <h2>多 Agent 协作架构</h2>
+    <p class="section-sub">四阶段长链推理流水线，由 Hermes 统一编排，支持子任务并行分发</p>
+
+    <div class="orchestrator">
+      <div class="badge">🧠 Hermes 编排引擎 · DeepSeek V4 Pro + MiniMax 双模型</div>
+    </div>
+
+    <div class="flowchart">
+      <div class="flow-node">
+        <div class="step">①</div>
+        <h3>数据摄入 Agent</h3>
+        <p>Jungle Scout / Helium 10<br>3 年历史数据<br>竞品标签交叉验证</p>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="step">②</div>
+        <h3>BCG 矩阵 Agent</h3>
+        <p>13+ 竞品四象限<br>P25 / P50 / P75 分位值<br>结构性机会识别</p>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="step">③</div>
+        <h3>战略生成 Agent</h3>
+        <p>五维度决策矩阵<br>肌酸人格矩阵<br>Devil's Advocate 验证</p>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="step">④</div>
+        <h3>DeckOS 报告 Agent</h3>
+        <p>42 页专业投影片<br>Dark / Noir / SaaS<br>自动质量评分</p>
+      </div>
+    </div>
+  </section>
 
   <!-- Quick Links -->
-  <div class="links">
-    <h2>📂 快速访问</h2>
+  <section class="links-section">
+    <h2>快速入口</h2>
+    <p class="section-sub">报告 · 演示 · 账单 · 技能体系</p>
     <div class="link-grid">
       <a href="billing-summary.html" class="link-card">
-        <span class="icon">💰</span>
-        <span class="title">API 消费看板</span>
-        <div class="desc">DeepSeek 8 天账单可视化</div>
-      </a>
-      <a href="workflow.md" class="link-card">
-        <span class="icon">🧠</span>
-        <span class="title">多 Agent 工作流</span>
-        <div class="desc">四阶段长链推理架构</div>
+        <span class="card-icon">💰</span>
+        <span class="card-title">API 消费看板</span>
+        <span class="card-desc">DeepSeek 8 天账单可视化，日均 ¥13.08</span>
       </a>
       <a href="reports/" class="link-card">
-        <span class="icon">📊</span>
-        <span class="title">分析报告</span>
-        <div class="desc">BCG 矩阵 + 竞品深度分析</div>
+        <span class="card-icon">📊</span>
+        <span class="card-title">BCG 分析报告</span>
+        <span class="card-desc">皮质醇赛道 13 竞品完整 BCG 矩阵分析</span>
       </a>
       <a href="decks/" class="link-card">
-        <span class="icon">📽️</span>
-        <span class="title">DeckOS 演示</span>
-        <div class="desc">42 页专业 HTML 投影片</div>
+        <span class="card-icon">📽️</span>
+        <span class="card-title">DeckOS 演示</span>
+        <span class="card-desc">3 风格 42 页专业 HTML 投影片</span>
+      </a>
+      <a href="workflow.md" class="link-card">
+        <span class="card-icon">🧠</span>
+        <span class="card-title">多 Agent 工作流</span>
+        <span class="card-desc">四阶段长链推理架构详解</span>
       </a>
       <a href="skills/" class="link-card">
-        <span class="icon">🛠</span>
-        <span class="title">Skill 体系</span>
-        <div class="desc">14 个自建专项 Skill</div>
+        <span class="card-icon">🛠</span>
+        <span class="card-title">14 自建 Skill</span>
+        <span class="card-desc">覆盖选品、视频分析、DeckOS、监控</span>
       </a>
-      <a href="https://github.com/redevilkid-Chan/hermes-agent-amazon-research" class="link-card">
-        <span class="icon">🔗</span>
-        <span class="title">GitHub 仓库</span>
-        <div class="desc">查看完整源码</div>
+      <a href="README.zh-CN.md" class="link-card">
+        <span class="card-icon">📖</span>
+        <span class="card-title">中文完整文档</span>
+        <span class="card-desc">项目介绍、架构、产出、消费证明</span>
       </a>
     </div>
-  </div>
+  </section>
 
-  <!-- Footer -->
-  <div class="footer">
-    <strong>Hermes Agent</strong> · DeepSeek V4 Pro · MiniMax · 
-    Xiaomi MiMo Orbit 100T Creator Incentive<br>
-    Built with ❤️ for AI-driven creators
-  </div>
+</main>
 
-</div>
+<footer>
+  <div class="footer-links">
+    <a href="README.md">English</a>
+    <a href="README.zh-CN.md">中文文档</a>
+    <a href="https://github.com/redevilkid-Chan/hermes-agent-amazon-research">GitHub</a>
+  </div>
+  <strong>Hermes Agent</strong> · DeepSeek V4 Pro · MiniMax · Xiaomi MiMo Orbit 100T<br>
+  Built for AI-driven creators
+</footer>
+
 </body>
 </html>

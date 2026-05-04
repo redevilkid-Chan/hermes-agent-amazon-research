@@ -1,5 +1,7 @@
 # Hermes Agent — 亚马逊智能选品与市场战略分析系统
 
+[English](./README.md) · [中文文档](./README.zh-CN.md)
+
 > AI 驱动的亚马逊全链路选品研究系统。  
 > 基于 **Hermes Agent** + **DeepSeek V4 Pro** + **MiniMax**。  
 > 14 个自建 Skill | 多 Agent 协作 | BCG 矩阵 | DeckOS 专业演示

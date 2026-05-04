@@ -1,5 +1,7 @@
 # Hermes Agent — Amazon Market Research System
 
+[English](./README.md) · [中文文档](./README.zh-CN.md)
+
 > AI-powered Amazon product research & market strategy analysis system.  
 > Built on **Hermes Agent** + **DeepSeek V4 Pro** + **MiniMax**.  
 > 14 custom Skills | Multi-Agent collaboration | BCG Matrix | DeckOS HTML reports
