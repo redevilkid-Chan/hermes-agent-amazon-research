@@ -1,0 +1,537 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Amazon选品分析流水线 — 操作培训</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&family=JetBrains+Mono&display=swap" rel="stylesheet"><style>
+:root{--bg-primary:#070B14;--bg-secondary:#0D1326;--bg-card:#111933;--bg-card-alt:#0F1730;--text-primary:#E8ECF4;--text-secondary:#8892B0;--text-dim:#4A5578;--text-inverse:#070B14;--accent-gold:#C9A96E;--accent-gold-light:#DFC896;--accent-gold-dark:#A88A4F;--accent-red:#B94A48;--accent-red-light:#D47371;--accent-green:#2E9B6F;--accent-green-light:#4AB88A;--accent-blue:#5B8DEF;--accent-blue-light:#87AEF5;--accent-purple:#8B5CF6;--accent-purple-light:#A78BFA;--gradient-hero:linear-gradient(135deg,#C9A96E 0%,#DFC896 50%,#8B5CF6 100%);--gradient-progress:linear-gradient(90deg,#C9A96E,#8B5CF6);--font-display:'Noto Serif SC',serif;--font-body:'Noto Sans SC',sans-serif;--font-mono:'JetBrains Mono',monospace;--space-xs:8px;--space-sm:16px;--space-md:24px;--space-lg:32px;--space-xl:48px;--space-2xl:64px;--page-padding:80px;--page-max-width:1080px;--page-max-width-wide:1280px;--shadow-card:0 2px 12px rgba(0,0,0,0.3);--ease-out:cubic-bezier(0.4,0,0.2,1);--anim-duration:0.4s}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);font-size:16px;color:var(--text-primary);background:var(--bg-primary);line-height:1.6;overflow:hidden;width:100vw;height:100vh}
+.deck{width:100vw;height:100vh;position:relative}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:var(--page-padding);opacity:0;pointer-events:none;transition:opacity var(--anim-duration) var(--ease-out);overflow-y:auto}
+.slide.active{opacity:1;pointer-events:all}
+.slide-content{max-width:var(--page-max-width);width:100%;margin:0 auto}
+.slide-content.wide{max-width:var(--page-max-width-wide)}
+.hero{font-family:var(--font-display);font-size:56px;font-weight:700;line-height:1.15}
+h1{font-family:var(--font-display);font-size:42px;font-weight:700;line-height:1.2}
+h2{font-family:var(--font-display);font-size:30px;font-weight:600;line-height:1.25}
+h3{font-family:var(--font-display);font-size:22px;font-weight:600;line-height:1.3}
+.text-lg{font-size:18px;line-height:1.6}.text-sm{font-size:14px;color:var(--text-secondary);line-height:1.5}
+.caption{font-size:12px;color:var(--text-dim)}
+.label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
+.gold{color:var(--accent-gold)}.red{color:var(--accent-red)}.green{color:var(--accent-green)}.blue{color:var(--accent-blue)}.purple{color:var(--accent-purple)}.dim{color:var(--text-dim)}
+.gradient-text{background:var(--gradient-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.card{background:var(--bg-card);border-radius:12px;padding:var(--space-lg);border:1px solid rgba(255,255,255,0.06);box-shadow:var(--shadow-card)}
+.card-gold{border-left:3px solid var(--accent-gold)}.card-red{border-left:3px solid var(--accent-red)}.card-green{border-left:3px solid var(--accent-green)}.card-blue{border-left:3px solid var(--accent-blue)}.card-purple{border-left:3px solid var(--accent-purple)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-md)}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:var(--space-sm)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient-progress);z-index:100;transition:width 0.5s var(--ease-out)}
+.page-num{position:fixed;bottom:var(--space-lg);right:var(--space-lg);font-size:12px;color:var(--text-dim);font-family:var(--font-mono)}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.08);font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--accent-gold)}
+.data-table td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px}
+.data-table .num{text-align:right;font-family:var(--font-mono)}
+.tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.tag-gold{background:rgba(201,169,110,.15);color:var(--accent-gold)}.tag-red{background:rgba(185,74,72,.15);color:var(--accent-red)}.tag-green{background:rgba(46,155,111,.15);color:var(--accent-green)}.tag-blue{background:rgba(91,141,239,.15);color:var(--accent-blue)}.tag-purple{background:rgba(139,92,246,.15);color:var(--accent-purple)}
+.mt-sm{margin-top:var(--space-sm)}.mt-md{margin-top:var(--space-md)}.mt-lg{margin-top:var(--space-lg)}.mt-xl{margin-top:var(--space-xl)}
+.mb-sm{margin-bottom:var(--space-sm)}.mb-md{margin-bottom:var(--space-md)}.mb-lg{margin-bottom:var(--space-lg)}.mb-xl{margin-bottom:var(--space-xl)}
+.flow-arrow{color:var(--accent-blue);font-size:20px;text-align:center;padding:4px 0}
+.flow-box{background:var(--bg-card);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:var(--space-md);text-align:center}
+.flow-box.active{border-color:var(--accent-green);background:rgba(46,155,111,0.08)}
+.code-block{background:#0D1326;border:1px solid rgba(201,169,110,0.15);border-radius:8px;padding:var(--space-md);font-family:var(--font-mono);font-size:13px;color:var(--accent-gold);line-height:1.8;white-space:pre-wrap}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.anim-fadeIn{animation:fadeIn var(--anim-duration) var(--ease-out) both}
+.anim-slideUp{animation:slideUp var(--anim-duration) var(--ease-out) both}
+</style></head><body><div class="deck" id="deck">
+<section class="slide">
+<div class="slide-content">
+<div style="min-height:calc(100vh - 160px);display:flex;flex-direction:column;justify-content:center">
+<div class="label gold anim-fadeIn" style="margin-bottom:var(--space-lg)">INTERNAL TRAINING · 2026</div>
+<h1 class="hero gradient-text anim-slideUp" style="margin-bottom:var(--space-md);max-width:750px">Amazon 选品分析<br>流水线操作指南</h1>
+<p class="text-lg dim anim-slideUp" style="max-width:550px;animation-delay:0.15s">从 Excel 数据到 BCG 分析报告，再到 HTML 演示 — 全流程 SOP</p>
+<div class="anim-slideUp mt-xl" style="animation-delay:0.3s;display:flex;gap:var(--space-xl)">
+<div><div class="gradient-text" style="font-size:38px;font-weight:700">10min</div><div class="label mt-sm">数据准备</div></div>
+<div style="width:1px;background:rgba(255,255,255,0.08)"></div>
+<div><div class="gradient-text" style="font-size:38px;font-weight:700">5min</div><div class="label mt-sm">AI分析</div></div>
+<div style="width:1px;background:rgba(255,255,255,0.08)"></div>
+<div><div class="gradient-text" style="font-size:38px;font-weight:700">3文件</div><div class="label mt-sm">交付物</div></div>
+</div></div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">目录</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:600px">7章 · 实践导向 · 新人可上手</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-red"><div class="label red">01</div><div class="text-lg mt-sm" style="font-weight:600">为什么需要流水线</div><div class="text-sm mt-sm">选品分析的重复劳动 · 标准化价值</div></div>
+<div class="card card-purple"><div class="label purple">02</div><div class="text-lg mt-sm" style="font-weight:600">流水线全景</div><div class="text-sm mt-sm">两个Skill分工 · 端到端数据流</div></div>
+<div class="card card-green"><div class="label green">03</div><div class="text-lg mt-sm" style="font-weight:600">Excel 数据模板</div><div class="text-sm mt-sm">3个Sheet · 必需字段 · 模板下载</div></div>
+<div class="card card-blue"><div class="label blue">04</div><div class="text-lg mt-sm" style="font-weight:600">触发分析</div><div class="text-sm mt-sm">对话范例 · 自动流程 · 产出物</div></div>
+<div class="card card-gold"><div class="label gold">05</div><div class="text-lg mt-sm" style="font-weight:600">读懂BCG结果</div><div class="text-sm mt-sm">四象限策略 · 5维评分卡 · 边缘产品</div></div>
+<div class="card card-purple"><div class="label purple">06</div><div class="text-lg mt-sm" style="font-weight:600">生成演示Deck</div><div class="text-sm mt-sm">一句话触发 · 操作方式</div></div>
+<div class="card card-green" style="grid-column:span 2"><div class="label green">07</div><div class="text-lg mt-sm" style="font-weight:600">FAQ + 字段词典</div><div class="text-sm mt-sm">常见问题 · 完整字段名/类型/示例</div></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第01章</div><div class="gradient-text anim-slideUp" style="font-size:100px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">01</div><h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">为什么需要流水线</h1><p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">选品分析不是一次性工作。把它变成可复用的 SOP。</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label red anim-fadeIn">现状痛点</div>
+<h2 class="red anim-slideUp mb-lg" style="max-width:700px">你每次做选品分析都这样吗？</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-red"><div class="label red">❌ 重复劳动</div><p class="text-lg mt-sm">每次重新写 Python 脚本算 BCG</p><p class="text-sm mt-sm">逻辑一样，只是数据换了。20 分钟写代码，10 分钟调 bug。</p></div>
+<div class="card card-red"><div class="label red">❌ 格式不统一</div><p class="text-lg mt-sm">JS 导出、H10 导出、手动整理</p><p class="text-sm mt-sm">每次格式不同，先花 15 分钟调 Excel 列名。</p></div>
+<div class="card card-red"><div class="label red">❌ 报告靠手写</div><p class="text-lg mt-sm">分析做完了，报告要手动码</p><p class="text-sm mt-sm">Excel 里有数据，但做成可汇报的文档又要 30 分钟。</p></div>
+<div class="card card-red"><div class="label red">❌ 团队不可复制</div><p class="text-lg mt-sm">只有你一个人会做</p><p class="text-sm mt-sm">新人接手要重新学一遍你的流程。</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">解决方案</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">标准化之后：10 分钟准备 → 5 分钟出报告</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div style="opacity:0.5;padding:var(--space-lg)">
+<div class="label dim">之前</div>
+<div class="text-sm mt-sm" style="line-height:2.2;text-decoration:line-through;text-decoration-color:var(--accent-red)">手动调 Excel 格式<br>手写 Python 算 BCG<br>手写 Markdown 报告<br>截图贴进 PPT<br>新人不会操作</div>
+</div>
+<div style="padding:var(--space-lg);border-left:2px solid var(--accent-green)">
+<div class="label green">之后</div>
+<div class="text-sm mt-sm" style="line-height:2.2;color:var(--accent-green)">按模板填 Excel<br>发给 Hermes 一句话<br>自动出 Excel + MD 报告<br>一句话出 HTML Deck<br>任何人都会操作</div>
+</div>
+</div>
+<div class="card card-green mt-lg anim-fadeIn" style="animation-delay:0.4s">
+<div class="label green">核心原则</div>
+<p class="text-sm mt-sm"><strong>规则先行，一次建设，反复复用。</strong>你只需要准备数据的 10 分钟，Hermes 负责剩下的分析和呈现。</p>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第02章</div><div class="gradient-text anim-slideUp" style="font-size:100px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">02</div><h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">流水线全景</h1><p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">两个 Skill 分工协作，端到端从数据到演示。</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content wide">
+<div class="label blue anim-fadeIn">架构</div>
+<h2 class="anim-slideUp mb-xl" style="max-width:700px">一条流水线，两个 Skill</h2>
+<div class="anim-slideUp" style="animation-delay:0.15s;display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:var(--space-sm);align-items:center;text-align:center">
+<div class="flow-box" style="padding:var(--space-xl)">
+<div class="label gold" style="font-size:14px">📊 你准备 Excel</div>
+<div class="text-sm mt-sm dim">3个Sheet<br>10分钟</div>
+</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box active" style="padding:var(--space-xl)">
+<div class="label green" style="font-size:14px">🤖 amazon-product-research</div>
+<div class="text-sm mt-sm" style="color:var(--accent-green)">格式识别<br>BCG计算<br>成分拆解<br>Nello对标</div>
+</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box" style="padding:var(--space-xl)">
+<div class="label gold" style="font-size:14px">📄 产出物</div>
+<div class="text-sm mt-sm dim">分析Excel<br>MD报告<br>Ready JSON</div>
+</div>
+</div>
+<div class="anim-slideUp mt-lg" style="animation-delay:0.3s;display:grid;grid-template-columns:1fr auto 1fr;gap:var(--space-sm);align-items:center;text-align:center;max-width:600px;margin:0 auto">
+<div class="flow-box active" style="padding:var(--space-lg)">
+<div class="label purple" style="font-size:14px">🤖 deckos</div>
+<div class="text-sm mt-sm" style="color:var(--accent-purple)">页面规划<br>SVG图表<br>Critic审查</div>
+</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box" style="padding:var(--space-lg)">
+<div class="label gold" style="font-size:14px">🎬 HTML Deck</div>
+<div class="text-sm mt-sm dim">42页深度<br>可演示<br>77分+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">Skill 分工</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">两个 Skill 的职责边界</h2>
+<table class="data-table anim-slideUp" style="animation-delay:0.15s">
+<thead><tr><th style="width:25%">维度</th><th style="width:37%"><span class="tag tag-green">amazon-product-research</span></th><th style="width:38%"><span class="tag tag-purple">deckos</span></th></tr></thead>
+<tbody>
+<tr><td>负责</td><td>数据 → 分析 → 报告</td><td>分析报告 → HTML 演示</td></tr>
+<tr><td>输入</td><td>你的 Excel 数据文件</td><td>分析产出的 JSON 或报告</td></tr>
+<tr><td>输出</td><td><span class="green">Excel</span> + <span class="blue">Markdown</span> + JSON</td><td><span class="purple">单文件 HTML</span> + 质检报告</td></tr>
+<tr><td>耗时</td><td>3-5 分钟</td><td>2-3 分钟</td></tr>
+<tr><td>触发词</td><td>「分析品类」「BCG矩阵」「竞品研究」</td><td>「做成Deck」「HTML演示」</td></tr>
+<tr><td>图表</td><td>ASCII 矩阵图（报告中）</td><td>纯 SVG（散点图/趋势线/柱状图）</td></tr>
+</tbody></table>
+<div class="card card-blue mt-md anim-slideUp" style="animation-delay:0.3s">
+<div class="label blue">💡 可以串联使用</div>
+<p class="text-sm mt-sm">分析完直接说「把这个做成 Deck」，Hermes 自动加载两个 Skill，数据无缝衔接。</p>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第03章</div><div class="gradient-text anim-slideUp" style="font-size:100px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">03</div><h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">Excel 数据模板</h1><p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">3 个 Sheet，15 个必需字段。这是整个流水线的唯一入口。</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">模板结构</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">一个 Excel，三个 Sheet</h2>
+<div class="grid-3 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green"><div class="label green">Sheet 1（必需）</div><div class="text-lg mt-sm" style="color:var(--accent-green);font-weight:600">月度销量趋势</div><p class="text-sm mt-sm">ASIN + 品牌 + 日期列（YYYY-MM）<br>值 = 该月销量件数<br><span class="green">至少覆盖 6 个月</span></p></div>
+<div class="card card-blue"><div class="label blue">Sheet 2（推荐）</div><div class="text-lg mt-sm" style="color:var(--accent-blue);font-weight:600">产品元数据</div><p class="text-sm mt-sm">月销售额 · 均价 · 评分 · 评论数<br>剂型 · 功效 · 上架天数<br><span class="blue">缺少会影响分析深度</span></p></div>
+<div class="card card-purple"><div class="label purple">Sheet 3（强烈推荐）</div><div class="text-lg mt-sm" style="color:var(--accent-purple);font-weight:600">成分数据</div><p class="text-sm mt-sm">镁含量 · L-Theanine · Ashwagandha<br>维D · 镁形态 · 其他成分<br><span class="purple">决定成分军备竞赛分析</span></p></div>
+</div>
+<div class="card mt-md anim-fadeIn" style="animation-delay:0.4s">
+<div class="label gold">📌 命名规范</div><p class="text-sm mt-sm">文件名：<strong>品类名_竞品数据.xlsx</strong>（如 肌酸赛道_竞品数据.xlsx），放到桌面的 <strong>💼 工作</strong> 文件夹。</p>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content wide">
+<div class="label green anim-fadeIn">Sheet 1</div>
+<h2 class="anim-slideUp mb-md" style="max-width:750px;color:var(--accent-green)">月度销量趋势（必需）</h2>
+<div style="overflow-x:auto;margin-bottom:var(--space-md)" class="anim-slideUp" style="animation-delay:0.15s">
+<table class="data-table">
+<thead><tr><th>ASIN</th><th>品牌</th><th class="num">2026-04</th><th class="num">2026-03</th><th class="num">2026-02</th><th class="num">2026-01</th><th class="num">2025-12</th><th class="num">...</th></tr></thead>
+<tbody>
+<tr><td style="font-family:var(--font-mono)">B0DFQ6SQ88</td><td>VEV</td><td class="num">7200</td><td class="num green">6351</td><td class="num">4213</td><td class="num">3060</td><td class="num">2946</td><td class="num dim">...</td></tr>
+<tr><td style="font-family:var(--font-mono)">B0DYXJ4JJ7</td><td>Loroc'e</td><td class="num green">7770</td><td class="num">4005</td><td class="num">1217</td><td class="num">1293</td><td class="num">987</td><td class="num dim">...</td></tr>
+</tbody></table></div>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.3s">
+<div class="card card-green"><div class="label green">✅ 正确</div><p class="text-sm mt-sm">列名用 YYYY-MM 格式（2026-03）<br>值填月销量件数<br>没有数据的格留空或填 0</p></div>
+<div class="card card-red"><div class="label red">❌ 错误</div><p class="text-sm mt-sm">列名写「3月」「March」<br>混填销售额和销量<br>缺 ASIN 列</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content wide">
+<div class="label blue anim-fadeIn">Sheet 2</div>
+<h2 class="anim-slideUp mb-md" style="max-width:750px;color:var(--accent-blue)">产品元数据（推荐）</h2>
+<div style="overflow-x:auto;margin-bottom:var(--space-md)" class="anim-slideUp" style="animation-delay:0.15s">
+<table class="data-table">
+<thead><tr><th>ASIN</th><th class="num">月销售额Q1均值($)</th><th class="num">均价Q1($)</th><th class="num">评分数</th><th class="num">评分</th><th>剂型维度</th><th class="num">上架天数</th></tr></thead>
+<tbody>
+<tr><td style="font-family:var(--font-mono)">B0DFQ6SQ88</td><td class="num green">59,232</td><td class="num">14.2</td><td class="num">995</td><td class="num"><span class="green">4.6</span></td><td>Veggie Caps</td><td class="num">572</td></tr>
+<tr><td style="font-family:var(--font-mono)">B0DGPZ3QST</td><td class="num">72,170</td><td class="num">20.9</td><td class="num">901</td><td class="num">4.1</td><td>Drinkable</td><td class="num">216</td></tr>
+</tbody></table></div>
+<div class="grid-3 anim-slideUp mb-sm" style="animation-delay:0.3s">
+<div><span class="tag tag-green">✅ ASIN</span><span class="text-sm dim" style="margin-left:8px">与Sheet1一致</span></div>
+<div><span class="tag tag-green">✅ 月销售额</span><span class="text-sm dim" style="margin-left:8px">美元，Q1均值</span></div>
+<div><span class="tag tag-green">✅ 评分</span><span class="text-sm dim" style="margin-left:8px">1.0-5.0</span></div>
+</div>
+<div class="card card-blue anim-fadeIn" style="animation-delay:0.4s">
+<div class="label blue">💡 剂型维度填什么？</div>
+<p class="text-sm mt-sm">Drinkable（粉剂饮料）· Veggie Caps（素食胶囊）· Liquid/Drop（液态滴剂）。这个字段决定了 BCG 中的「产品差异化」评分。</p>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content wide">
+<div class="label purple anim-fadeIn">Sheet 3</div>
+<h2 class="anim-slideUp mb-md" style="max-width:750px;color:var(--accent-purple)">成分数据（强烈推荐）</h2>
+<div style="overflow-x:auto;margin-bottom:var(--space-md)" class="anim-slideUp" style="animation-delay:0.15s">
+<table class="data-table">
+<thead><tr><th>ASIN</th><th>镁含量</th><th>镁形态</th><th class="num">L-Theanine</th><th class="num">Ashwagandha</th><th>数据来源</th></tr></thead>
+<tbody>
+<tr><td style="font-family:var(--font-mono)">B0DFQ6SQ88</td><td><span class="green">300mg</span></td><td>Glycinate+Citrate+Oxide+Malate</td><td class="num green">400mg</td><td class="num green">300mg</td><td><span class="tag tag-green">Amazon OCR ✓</span></td></tr>
+<tr><td style="font-family:var(--font-mono)">B0DGPZ3QST</td><td><span class="red">100mg</span></td><td>Glycinate</td><td class="num">80mg</td><td class="num red">5mg ⚠️</td><td><span class="tag tag-green">Amazon OCR ✓</span></td></tr>
+</tbody></table></div>
+<div class="card card-purple anim-slideUp mt-sm" style="animation-delay:0.3s">
+<div class="label purple">🔍 怎么获取成分数据？</div>
+<p class="text-sm mt-sm">在 Amazon 产品页找到 "Supplement Facts" 图片 → 截图 → 发给 Hermes 说「识别这个成分面板」→ 30 秒出结果。Vision OCR 自动提取所有成分和剂量。</p>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">模板</div>
+<h2 class="anim-slideUp mb-md" style="max-width:700px">复制以下表头到 Excel</h2>
+<div class="code-block anim-slideUp" style="animation-delay:0.15s;font-size:12px">
+Sheet 1: 月度销量趋势
+ASIN	品牌	2026-04	2026-03	2026-02	2026-01	2025-12	2025-11	2025-10
+
+Sheet 2: 产品元数据
+ASIN	商品标题	月销售额Q1均值($)	月销量Q1均值	均价Q1($)	评分数	评分	剂型维度	核心功效	上架天数
+
+Sheet 3: 成分数据（可选）
+ASIN	镁含量	镁形态	L-Theanine含量	Ashwagandha含量	维D含量	其他关键成分	数据来源
+</div>
+<div class="grid-2 anim-slideUp mt-lg" style="animation-delay:0.3s">
+<div class="card card-green"><div class="label green">✅ 竞品数量</div><div class="text-lg mt-sm" style="color:var(--accent-green)">8-15 个</div><p class="text-sm mt-sm">最少 8 个（BCG 需要中位数分界）。理想 12-15 个。</p></div>
+<div class="card card-gold"><div class="label gold">✅ 月度数据</div><div class="text-lg mt-sm" style="color:var(--accent-gold)">6 个月+</div><p class="text-sm mt-sm">覆盖越多越准。我们皮质醇项目用了 25 个月。</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第04章</div><div class="gradient-text anim-slideUp" style="font-size:100px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">04</div><h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">触发分析</h1><p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">对 Hermes 说一句话，5 分钟后拿到完整分析报告。</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">对话范例</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">在 Telegram/微信上这样说</h2>
+<div class="anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green mb-md">
+<div class="label green">标准版</div>
+<div class="code-block mt-sm" style="font-size:14px">分析肌酸赛道的竞品，数据在「肌酸赛道_竞品数据.xlsx」
+12 个竞品，$3,000/月 PPC 预算视角</div>
+</div>
+<div class="card card-blue mb-md">
+<div class="label blue">简洁版</div>
+<div class="code-block mt-sm" style="font-size:14px">做一份肌酸赛道 BCG 分析</div>
+</div>
+<div class="card card-purple">
+<div class="label purple">含排除项</div>
+<div class="code-block mt-sm" style="font-size:14px">分析肌酸赛道，排除 XX 品牌（纯电解质产品，不相关）
+成分数据在 Sheet3，帮我做成分军备竞赛分析</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label blue anim-fadeIn">自动流程</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">Hermes 收到后会做什么</h2>
+<div class="anim-slideUp" style="animation-delay:0.15s">
+<div style="display:flex;flex-direction:column;gap:var(--space-sm)">
+<div class="card" style="display:flex;align-items:center;gap:var(--space-md)"><div style="width:36px;height:36px;background:var(--accent-green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">1</div><div><div class="text-lg" style="font-weight:600">问 3-5 个问题确认需求</div><div class="text-sm dim">数据路径、分析范围、排除项、输出偏好。每次只问一个。</div></div></div>
+<div class="card" style="display:flex;align-items:center;gap:var(--space-md)"><div style="width:36px;height:36px;background:var(--accent-blue);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">2</div><div><div class="text-lg" style="font-weight:600">自动检测数据格式并标准化</div><div class="text-sm dim">Jungle Scout / Helium10 / 自定义 Excel 三种格式自动识别。</div></div></div>
+<div class="card" style="display:flex;align-items:center;gap:var(--space-md)"><div style="width:36px;height:36px;background:var(--accent-purple);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">3</div><div><div class="text-lg" style="font-weight:600">排除异常数据</div><div class="text-sm dim">已死产品（连续 3 月销量 = 0）、品类溢出者（成分验证不相关）。</div></div></div>
+<div class="card" style="display:flex;align-items:center;gap:var(--space-md)"><div style="width:36px;height:36px;background:var(--accent-gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">4</div><div><div class="text-lg" style="font-weight:600">BCG 计算 + 象限分类 + 5 维评分</div><div class="text-sm dim">X = 销售额 50% + 评论数 50% ｜ Y = 增速 60% + 评分 40%。</div></div></div>
+<div class="card" style="display:flex;align-items:center;gap:var(--space-md)"><div style="width:36px;height:36px;background:var(--accent-red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">5</div><div><div class="text-lg" style="font-weight:600">成分拆解 + Nello 对标 + Devil's Advocate</div><div class="text-sm dim">成分有效剂量判断、剂型空白识别、批判性审视。</div></div></div>
+<div class="card" style="display:flex;align-items:center;gap:var(--space-md)"><div style="width:36px;height:36px;background:var(--accent-green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">6</div><div><div class="text-lg" style="font-weight:600">输出 Excel + Markdown 报告</div><div class="text-sm dim">保存到数据源同目录。</div></div></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">产出物</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">分析完成后你会得到</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green"><div class="label green">📊 分析 Excel（5 个 Sheet）</div><div class="text-sm mt-sm" style="line-height:2">BCG总览 — 象限/坐标/5维评分<br>月度趋势 — 所有ASIN销量<br>成分对比 — mg含量矩阵<br>Nello对标 — 维度评分<br>分析摘要 — 统计+建议+时间戳</div></div>
+<div class="card card-blue"><div class="label blue">📝 分析报告.md（10 章）</div><div class="text-sm mt-sm" style="line-height:2">BCG矩阵全景（ASCII图）<br>明星/现金牛/问题儿童/瘦狗<br>Devil's Advocate 批判<br>Nello 对标分析<br>战略行动建议 + 预算分配</div></div>
+</div>
+<div class="card card-purple mt-md anim-fadeIn" style="animation-delay:0.4s">
+<div class="label purple">文件位置</div>
+<div class="code-block mt-sm" style="font-size:13px">~/Desktop/💼 工作/品类名_竞品分析.xlsx
+~/Desktop/💼 工作/品类名_BCG分析报告.md</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第05章</div><div class="gradient-text anim-slideUp" style="font-size:100px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">05</div><h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">读懂 BCG 结果</h1><p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">四象限策略 · 5 维评分卡 · 边缘产品识别。</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">四象限</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">BCG 矩阵四象限速查</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green"><div class="label green">⭐ 明星 Star</div><div class="text-lg mt-sm" style="color:var(--accent-green)">高份额 + 高增长</div><p class="text-sm mt-sm"><strong>策略：加码投入</strong><br>占预算 40-50%<br>品类增长引擎</p></div>
+<div class="card card-gold"><div class="label gold">💰 现金牛 Cash Cow</div><div class="text-lg mt-sm" style="color:var(--accent-gold)">高份额 + 低增长</div><p class="text-sm mt-sm"><strong>策略：维持收割</strong><br>占预算 15-20%<br>不再追加投资</p></div>
+<div class="card card-blue"><div class="label blue">❓ 问题儿童 Question Mark</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">低份额 + 高增长</div><p class="text-sm mt-sm"><strong>策略：选择性押注</strong><br>占预算 20-25%<br>看增速和差异化</p></div>
+<div class="card card-red"><div class="label red">🐶 瘦狗 Dog</div><div class="text-lg mt-sm" style="color:var(--accent-red)">低份额 + 低增长</div><p class="text-sm mt-sm"><strong>策略：退出或忽略</strong><br>0% 预算分配<br>不投入任何资源</p></div>
+</div>
+<div class="text-sm dim mt-md anim-fadeIn" style="animation-delay:0.3s">分界线 = 品类中位数。X 轴 = 市场份额（销售额+评论），Y 轴 = 增长潜力（增速+评分）。</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">5 维评分</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">每个竞品的 5 维评分卡</h2>
+<table class="data-table anim-slideUp" style="animation-delay:0.15s">
+<thead><tr><th>维度</th><th>评价什么</th><th>高分意味</th><th>数据来源</th></tr></thead>
+<tbody>
+<tr><td><strong>市场份额</strong></td><td>月销售额在同品类中的位置</td><td><span class="green">品类头部玩家</span></td><td class="dim">月销售额 percentile</td></tr>
+<tr><td><strong>增长潜力</strong></td><td>Q1 增速 + 6 月趋势</td><td><span class="green">正在快速抢份额</span></td><td class="dim">Q1增速 percentile</td></tr>
+<tr><td><strong>品牌护城河</strong></td><td>评论数 + 评分 + 上架天数</td><td><span class="green">后来者难以撼动</span></td><td class="dim">评论数 percentile</td></tr>
+<tr><td><strong>产品差异化</strong></td><td>剂型唯一性 + 成分独特性</td><td><span class="green">有独占赛道</span></td><td class="dim">剂型出现次数</td></tr>
+<tr><td><strong>利润结构</strong></td><td>均价 vs 品类中位数</td><td><span class="green">有溢价能力</span></td><td class="dim">vs 中位均价</td></tr>
+</tbody></table>
+<div class="card card-red mt-md anim-slideUp" style="animation-delay:0.3s">
+<div class="label red">⚠️ 特别注意：边缘产品</div>
+<p class="text-sm mt-sm">X 或 Y 指数离中位数 < 0.05 的产品可能被误判。用 5 维评分卡做交叉验证，不要只看象限标签。</p>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label red anim-fadeIn">陷阱识别</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px;color:var(--accent-red)">BCG 可能骗你的 3 种情况</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-red"><div class="label red">🔍 品牌内部 SKU 迭代</div><p class="text-sm mt-sm">同一品牌有多个 ASIN 时，"下滑"可能不是衰退，而是品牌方主动把资源倾斜给新品。如 Loroc'e 的 3 个 ASIN 博弈。</p></div>
+<div class="card card-red"><div class="label red">🔍 品类溢出者</div><p class="text-sm mt-sm">标签系统把不相关的产品归入赛道。检查产品标题 + 成分面板验证。如 GOBIOTIX — 纯镁产品被消费者搜索行为误归入皮质醇赛道。</p></div>
+<div class="card card-red"><div class="label red">🔍 TikTok 脉冲</div><p class="text-sm mt-sm">品类高增长可能来自 TikTok 短期热度（如 Nello 引爆），而非真实需求扩张。热度退潮后整个品类基准线下移。</p></div>
+<div class="card card-gold"><div class="label gold">🔍 粉尘添加</div><p class="text-sm mt-sm">宣称"含 Ashwagandha"但实际 5mg。标签有 ≠ 剂量够。成分面板说了算，不是产品标题。</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第06章</div><div class="gradient-text anim-slideUp" style="font-size:100px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">06</div><h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">生成演示 Deck</h1><p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">分析报告看完后，一句话出 HTML 演示文稿。</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label purple anim-fadeIn">从报告到演示</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">分析完成 → Deck 只需一句话</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div>
+<div class="card card-purple mb-md"><div class="label purple">对 Hermes 说</div><div class="code-block mt-sm" style="font-size:15px">把这个 BCG 分析做成 HTML Deck
+35 页，创始人视角</div></div>
+<div class="card card-green"><div class="label green">Hermes 会</div><div class="text-sm mt-sm" style="line-height:2">加载分析数据<br>生成 4 个 SVG 图表<br>组装 35-42 页 HTML<br>自动跑 Critic 审查<br>确保 ≥ 75 分</div></div>
+</div>
+<div class="card card-gold"><div class="label gold">操作方式</div><div class="text-sm mt-sm" style="line-height:2.2">浏览器打开 HTML 文件<br><strong>→ ↓ Space</strong> = 下一页<br><strong>← ↑</strong> = 上一页<br><strong>Home / End</strong> = 首页 / 末页<br><strong>F</strong> = 全屏演示</div></div>
+</div>
+<div class="card mt-md anim-fadeIn" style="animation-delay:0.4s">
+<div class="label gold">📂 输出位置</div>
+<div class="code-block mt-sm" style="font-size:13px">~/Desktop/💼 工作/2026-04-30_DeckOS协议层/deck-os/generator/
+└── 品类名_BCG矩阵_DeckOS.html</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label blue anim-fadeIn">Deck 内含</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">生成的 Deck 包含什么</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-blue"><div class="label blue">📊 4 个 SVG 图表</div><div class="text-sm mt-sm" style="line-height:2.2">BCG 散点图（气泡大小 = 销售额）<br>象限分布柱状图<br>Top5 月度趋势线<br>成分剂量对比柱状图</div></div>
+<div class="card card-gold"><div class="label gold">📝 8 个章节</div><div class="text-sm mt-sm" style="line-height:2.2">误读的市场（问题发现）<br>数据不会说谎（成分深挖）<br>BCG 竞争矩阵（核心分析）<br>成分军备竞赛<br>Devil's Advocate 批判<br>Nello 对标<br>战略行动建议<br>总结与下一步</div></div>
+</div>
+<div class="card card-green mt-md anim-fadeIn" style="animation-delay:0.3s">
+<div class="label green">设计风格</div><p class="text-sm mt-sm">深蓝底色 + 鎏金霓虹（金色标题 + 紫色洞察 + 绿色增长）。所有图表纯 SVG 手绘，配色与设计系统完全一致。0 外部依赖，单文件交付。</p>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第07章</div><div class="gradient-text anim-slideUp" style="font-size:100px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">07</div><h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">FAQ + 字段词典</h1><p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">常见问题 · 完整字段名/类型/示例。</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">FAQ</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">6 个最常见的问题</h2>
+<div class="anim-slideUp" style="animation-delay:0.15s;display:flex;flex-direction:column;gap:var(--space-sm)">
+<div class="card"><span style="color:var(--accent-gold);font-weight:600">Q: 只有 5 个竞品能做 BCG 吗？</span><p class="text-sm mt-sm">不建议。BCG 用中位数分象限，样本太少失真。至少 8 个，理想 12-15。</p></div>
+<div class="card"><span style="color:var(--accent-gold);font-weight:600">Q: 没有成分数据怎么办？</span><p class="text-sm mt-sm">可以做 BCG，但会失去「成分军备竞赛」维度。建议对 Top 5 竞品用 Vision OCR 提取。</p></div>
+<div class="card"><span style="color:var(--accent-gold);font-weight:600">Q: 数据有断档怎么办？</span><p class="text-sm mt-sm">Hermes 自动处理缺失值。连续断档超过 6 个月的产品会标记为「数据不足」。</p></div>
+<div class="card"><span style="color:var(--accent-gold);font-weight:600">Q: 分析结果和在 JS/H10 看到的不一样？</span><p class="text-sm mt-sm">正常。JS/H10 是单一排名，BCG 是份额 × 增长的双维矩阵。品类第一可能不是明星。</p></div>
+<div class="card"><span style="color:var(--accent-gold);font-weight:600">Q: 怎么判断「品类溢出者」？</span><p class="text-sm mt-sm">看标题 + 成分面板 + 功效标签。标题不含品类词、成分不含核心成分、标签"Others"= 溢出者。</p></div>
+<div class="card"><span style="color:var(--accent-gold);font-weight:600">Q: 能设置定时监控吗？</span><p class="text-sm mt-sm">可以。对 Hermes 说「每周一自动更新 BCG 数据」，它会建 cron job。</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label dim anim-fadeIn">附录</div>
+<h2 class="anim-slideUp mb-md" style="max-width:700px">完整字段词典</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div>
+<div class="label green mb-sm">Sheet 1: 月度销量趋势</div>
+<table class="data-table"><tbody>
+<tr><td>ASIN</td><td class="dim">文本</td><td>✅ 必需</td><td class="dim">B0DFQ6SQ88</td></tr>
+<tr><td>品牌</td><td class="dim">文本</td><td>✅ 必需</td><td class="dim">VEV</td></tr>
+<tr><td>YYYY-MM</td><td class="dim">数字</td><td>✅ 必需</td><td class="dim">6351</td></tr>
+</tbody></table>
+<div class="label blue mb-sm mt-md">Sheet 2: 产品元数据</div>
+<table class="data-table"><tbody>
+<tr><td>ASIN</td><td class="dim">文本</td><td>✅</td></tr>
+<tr><td>月销售额Q1均值($)</td><td class="dim">数字</td><td>✅</td></tr>
+<tr><td>均价Q1($)</td><td class="dim">数字</td><td>✅</td></tr>
+<tr><td>评分数</td><td class="dim">整数</td><td>✅</td></tr>
+<tr><td>评分</td><td class="dim">小数</td><td>✅</td></tr>
+<tr><td>剂型维度</td><td class="dim">文本</td><td>🔶</td></tr>
+<tr><td>上架天数</td><td class="dim">整数</td><td>🔶</td></tr>
+</tbody></table>
+</div>
+<div>
+<div class="label purple mb-sm">Sheet 3: 成分数据</div>
+<table class="data-table"><tbody>
+<tr><td>ASIN</td><td class="dim">文本</td><td>✅</td></tr>
+<tr><td>镁含量</td><td class="dim">文本</td><td>🔶</td><td class="dim">300mg</td></tr>
+<tr><td>镁形态</td><td class="dim">文本</td><td>🔶</td><td class="dim">Glycinate</td></tr>
+<tr><td>L-Theanine含量</td><td class="dim">文本</td><td>🔶</td><td class="dim">400mg</td></tr>
+<tr><td>Ashwagandha含量</td><td class="dim">文本</td><td>🔶</td><td class="dim">300mg</td></tr>
+<tr><td>维D含量</td><td class="dim">文本</td><td>可选</td><td class="dim">50mcg</td></tr>
+<tr><td>份数(Servings)</td><td class="dim">整数</td><td>可选</td><td class="dim">60</td></tr>
+<tr><td>数据来源</td><td class="dim">文本</td><td>🔶</td><td class="dim">OCR ✓</td></tr>
+</tbody></table>
+<div class="card mt-md" style="background:rgba(201,169,110,0.03)">
+<div class="text-sm"><span style="color:var(--accent-green)">✅ = 必需</span> &nbsp; <span style="color:var(--accent-blue)">🔶 = 强烈推荐</span> &nbsp; <span class="dim">可选 = 可缺</span></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">总结</div>
+<h2 class="gradient-text anim-slideUp mb-lg" style="font-size:36px;max-width:700px">记住这 5 件事就够了</h2>
+<div class="anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green mb-sm"><div class="label green">1</div><div class="text-lg mt-sm" style="color:var(--accent-green)">数据按模板准备。</div><div class="text-sm">3 个 Sheet，15 个必需字段。唯一需要你手动做的工作，10 分钟。</div></div>
+<div class="card card-blue mb-sm"><div class="label blue">2</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">一句话触发分析。</div><div class="text-sm">「分析 XX 赛道竞品」。Hermes 自动识别格式、清洗数据、计算 BCG。</div></div>
+<div class="card card-purple mb-sm"><div class="label purple">3</div><div class="text-lg mt-sm" style="color:var(--accent-purple)">看 5 维评分卡，不只象限。</div><div class="text-sm">BCG 是快照不是预言。边缘产品可能被误判，交叉验证。</div></div>
+<div class="card card-gold mb-sm"><div class="label gold">4</div><div class="text-lg mt-sm" style="color:var(--accent-gold)">分析完立刻出 Deck。</div><div class="text-sm">「把这个做成 Deck」。4 个 SVG 图表 + 深蓝鎏金设计，可直接演示。</div></div>
+<div class="card card-green"><div class="label green">5</div><div class="text-lg mt-sm" style="color:var(--accent-green)">团队任何人都能操作。</div><div class="text-sm">不需要会 Python，不需要懂 BCG。按模板填数据 → 对 Hermes 说话 → 拿报告。</div></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn" style="font-size:14px">立即行动</div>
+<h2 class="gradient-text anim-slideUp mb-lg" style="font-size:38px;max-width:650px">现在就去试第一个品类</h2>
+<div class="anim-slideUp" style="animation-delay:0.15s;display:flex;flex-direction:column;gap:var(--space-md)">
+<div class="card card-green" style="padding:var(--space-xl)">
+<div style="font-size:48px;font-weight:700;color:var(--accent-green);font-family:var(--font-display)">01</div>
+<h3 style="color:var(--accent-green);margin-top:var(--space-sm)">打开 Excel，复制模板表头</h3>
+<div class="text-sm mt-sm dim">填入你正在做的一个品类的 8-12 个竞品数据。至少 6 个月销量。</div>
+</div>
+<div class="card card-blue" style="padding:var(--space-xl)">
+<div style="font-size:48px;font-weight:700;color:var(--accent-blue);font-family:var(--font-display)">02</div>
+<h3 style="color:var(--accent-blue);margin-top:var(--space-sm)">发给 Hermes</h3>
+<div class="text-sm mt-sm dim">「分析这个品类的竞品，数据在 XX.xlsx」</div>
+</div>
+<div class="card card-purple" style="padding:var(--space-xl)">
+<div style="font-size:48px;font-weight:700;color:var(--accent-purple);font-family:var(--font-display)">03</div>
+<h3 style="color:var(--accent-purple);margin-top:var(--space-sm)">拿到报告后，说「做成 Deck」</h3>
+<div class="text-sm mt-sm dim">5 分钟后打开浏览器，开始演示你的品类 BCG 分析。</div>
+</div>
+</div>
+<div class="text-sm dim mt-xl anim-fadeIn" style="text-align:center;animation-delay:0.5s">
+📎 完整操作手册：~/Desktop/💼 工作/Amazon选品分析流水线_操作手册.md<br>
+📦 配套 Skill：amazon-product-research + deckos
+</div>
+</div>
+</section>
+</div><div class="progress-bar" id="progressBar" style="width:0%"></div><div class="page-num" id="pageNum">1 / 30</div><script>(function(){var slides=document.querySelectorAll('.slide'),total=slides.length,current=0;function show(i){slides.forEach(function(s,j){s.classList.toggle('active',j===i)});document.getElementById('progressBar').style.width=((i+1)/total*100)+'%';document.getElementById('pageNum').textContent=(i+1)+' / '+total}document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();current=Math.min(current+1,total-1);show(current)}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();current=Math.max(current-1,0);show(current)}else if(e.key==='Home'){e.preventDefault();current=0;show(current)}else if(e.key==='End'){e.preventDefault();current=total-1;show(current)}else if(e.key==='f'||e.key==='F'){e.preventDefault();if(document.fullscreenElement){document.exitFullscreen()}else{document.documentElement.requestFullscreen()}}});show(0)})();</script></body></html>

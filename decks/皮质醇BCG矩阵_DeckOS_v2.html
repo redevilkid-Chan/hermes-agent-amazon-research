@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>皮质醇赛道 BCG 竞争矩阵 — DeckOS v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary:#070B14;--bg-secondary:#0D1326;--bg-card:#111933;--bg-card-alt:#0F1730;
+  --text-primary:#E8ECF4;--text-secondary:#8892B0;--text-dim:#4A5578;--text-inverse:#070B14;
+  --accent-gold:#C9A96E;--accent-gold-light:#DFC896;--accent-gold-dark:#A88A4F;
+  --accent-red:#B94A48;--accent-red-light:#D47371;--accent-green:#2E9B6F;--accent-green-light:#4AB88A;
+  --accent-blue:#5B8DEF;--accent-blue-light:#87AEF5;--accent-purple:#8B5CF6;--accent-purple-light:#A78BFA;
+  --gradient-hero:linear-gradient(135deg,#C9A96E 0%,#DFC896 50%,#8B5CF6 100%);
+  --gradient-progress:linear-gradient(90deg,#C9A96E,#8B5CF6);
+  --font-display:'Noto Serif SC','Source Han Serif SC',serif;
+  --font-body:'Noto Sans SC','Source Han Sans SC',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','SF Mono',monospace;
+  --space-xs:8px;--space-sm:16px;--space-md:24px;--space-lg:32px;--space-xl:48px;--space-2xl:64px;--space-3xl:96px;
+  --page-padding:80px;--page-max-width:1080px;--page-max-width-wide:1280px;
+  --shadow-card:0 2px 12px rgba(0,0,0,0.3);--glow-gold:0 0 20px rgba(201,169,110,0.25);
+  --ease-out:cubic-bezier(0.4,0,0.2,1);--anim-duration:0.4s;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);font-size:16px;color:var(--text-primary);background:var(--bg-primary);line-height:1.6;overflow:hidden;width:100vw;height:100vh}
+.deck{width:100vw;height:100vh;position:relative}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:var(--page-padding);opacity:0;pointer-events:none;transition:opacity var(--anim-duration) var(--ease-out);overflow-y:auto}
+.slide.active{opacity:1;pointer-events:all}
+.slide-content{max-width:var(--page-max-width);width:100%;margin:0 auto}
+.slide-content.wide{max-width:var(--page-max-width-wide)}
+.hero{font-family:var(--font-display);font-size:56px;font-weight:700;line-height:1.15}
+h1{font-family:var(--font-display);font-size:42px;font-weight:700;line-height:1.2}
+h2{font-family:var(--font-display);font-size:30px;font-weight:600;line-height:1.25}
+h3{font-family:var(--font-display);font-size:22px;font-weight:600;line-height:1.3}
+.text-lg{font-size:18px;line-height:1.6}
+.text-sm{font-size:14px;color:var(--text-secondary);line-height:1.5}
+.caption{font-size:12px;color:var(--text-dim)}
+.label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
+.gold{color:var(--accent-gold)}.red{color:var(--accent-red)}.green{color:var(--accent-green)}.blue{color:var(--accent-blue)}.purple{color:var(--accent-purple)}.dim{color:var(--text-dim)}
+.gradient-text{background:var(--gradient-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.card{background:var(--bg-card);border-radius:12px;padding:var(--space-lg);border:1px solid rgba(255,255,255,0.06);box-shadow:var(--shadow-card)}
+.card-gold{border-left:3px solid var(--accent-gold)}.card-red{border-left:3px solid var(--accent-red)}.card-green{border-left:3px solid var(--accent-green)}.card-blue{border-left:3px solid var(--accent-blue)}.card-purple{border-left:3px solid var(--accent-purple)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-md)}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:var(--space-sm)}
+.chart-container{background:var(--bg-card);border-radius:12px;padding:var(--space-md);border:1px solid rgba(255,255,255,0.06);overflow:hidden}
+.chart-container svg{width:100%;height:auto;display:block}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient-progress);z-index:100;transition:width 0.5s var(--ease-out)}
+.page-num{position:fixed;bottom:var(--space-lg);right:var(--space-lg);font-size:12px;color:var(--text-dim);font-family:var(--font-mono)}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.08);font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--accent-gold)}
+.data-table td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px}
+.data-table .num{text-align:right;font-family:var(--font-mono)}
+.data-table .up{color:var(--accent-green)}.data-table .down{color:var(--accent-red)}.data-table .warn{color:var(--accent-gold)}
+.tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.tag-gold{background:rgba(201,169,110,.15);color:var(--accent-gold)}.tag-red{background:rgba(185,74,72,.15);color:var(--accent-red)}.tag-green{background:rgba(46,155,111,.15);color:var(--accent-green)}.tag-blue{background:rgba(91,141,239,.15);color:var(--accent-blue)}.tag-purple{background:rgba(139,92,246,.15);color:var(--accent-purple)}
+.star-rating{color:var(--accent-gold);font-weight:600}
+.mt-sm{margin-top:var(--space-sm)}.mt-md{margin-top:var(--space-md)}.mt-lg{margin-top:var(--space-lg)}.mt-xl{margin-top:var(--space-xl)}
+.mb-sm{margin-bottom:var(--space-sm)}.mb-md{margin-bottom:var(--space-md)}.mb-lg{margin-bottom:var(--space-lg)}.mb-xl{margin-bottom:var(--space-xl)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.anim-fadeIn{animation:fadeIn var(--anim-duration) var(--ease-out) both}
+.anim-slideUp{animation:slideUp var(--anim-duration) var(--ease-out) both}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- SLIDE 01 -->
+<section class="slide">
+<div class="slide-content">
+<div style="min-height:calc(100vh - 160px);display:flex;flex-direction:column;justify-content:center">
+<div class="label gold anim-fadeIn" style="margin-bottom:var(--space-lg)">BCG COMPETITIVE MATRIX · 2026 Q1</div>
+<h1 class="hero gradient-text anim-slideUp" style="margin-bottom:var(--space-md);max-width:750px">皮质醇赛道<br>BCG 竞争矩阵</h1>
+<p class="text-lg dim anim-slideUp" style="max-width:550px;animation-delay:0.15s">12个纯皮质醇竞品 · 综合指数分析 · 品类之王是虚假的</p>
+<div class="anim-slideUp" style="margin-top:var(--space-2xl);display:flex;gap:var(--space-xl);animation-delay:0.3s">
+<div><div class="gradient-text" style="font-size:42px;font-weight:700">12</div><div class="label mt-sm">活跃竞品</div></div>
+<div style="width:1px;background:rgba(255,255,255,0.08)"></div>
+<div><div class="gradient-text" style="font-size:42px;font-weight:700">$517K</div><div class="label mt-sm">品类月销</div></div>
+<div style="width:1px;background:rgba(255,255,255,0.08)"></div>
+<div><div class="gradient-text" style="font-size:42px;font-weight:700">2⭐</div><div class="label mt-sm">明星产品</div></div>
+<div style="width:1px;background:rgba(255,255,255,0.08)"></div>
+<div><div class="gradient-text" style="font-size:42px;font-weight:700">+209%</div><div class="label mt-sm">最高增速</div></div>
+</div>
+<div class="caption anim-fadeIn" style="margin-top:var(--space-2xl);animation-delay:0.5s">2026-04-30 · DeckOS v2.0 · 42页深度版</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 02 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">目录 AGENDA</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:600px">42页 · 8个章节 · 问题驱动的竞争分析</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-red"><div class="label red">01</div><div class="text-lg mt-sm" style="font-weight:600">一个被误读的市场</div><div class="text-sm mt-sm">3个致命错误 · GOBIOTIX 揭露 · 重新校准</div></div>
+<div class="card card-purple"><div class="label purple">02</div><div class="text-lg mt-sm" style="font-weight:600">数据不会说谎</div><div class="text-sm mt-sm">成分面板深挖 · 剂型革命 · 定价策略</div></div>
+<div class="card card-green"><div class="label green">03</div><div class="text-lg mt-sm" style="font-weight:600">BCG 竞争矩阵</div><div class="text-sm mt-sm">散点图 · 四象限深剖 · 月度趋势线</div></div>
+<div class="card card-blue"><div class="label blue">04</div><div class="text-lg mt-sm" style="font-weight:600">成分军备竞赛</div><div class="text-sm mt-sm">对比柱状图 · 剂量策略 · 剂型分布</div></div>
+<div class="card card-gold"><div class="label gold">05</div><div class="text-lg mt-sm" style="font-weight:600">Devil's Advocate</div><div class="text-sm mt-sm">框架盲区 · 误判风险 · 真实竞争动态</div></div>
+<div class="card card-purple"><div class="label purple">06</div><div class="text-lg mt-sm" style="font-weight:600">Nello 对标</div><div class="text-sm mt-sm">TikTok标杆 · 差距分析 · 谁最接近</div></div>
+<div class="card card-green"><div class="label green">07</div><div class="text-lg mt-sm" style="font-weight:600">战略行动</div><div class="text-sm mt-sm">优先级 · $3K预算分配 · 风险预警</div></div>
+<div class="card card-gold"><div class="label gold">08</div><div class="text-lg mt-sm" style="font-weight:600">总结与下一步</div><div class="text-sm mt-sm">核心结论 · 行动清单 · 数据附录</div></div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 03 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第01章</div>
+<div class="gradient-text anim-slideUp" style="font-size:120px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">01</div>
+<h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">一个被误读的市场</h1>
+<p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">数据不会骗人，但标签会。重新审视皮质醇赛道的真实竞争格局。</p>
+</div>
+</section>
+
+<!-- SLIDE 04 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label red anim-fadeIn">致命错误</div>
+<h2 class="red anim-slideUp mb-lg" style="max-width:700px">竞品分析的3个常见误区</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-red"><div class="label red">❌ 只看销售额排名</div><p class="text-lg mt-sm">GOBIOTIX $517K/月排第一</p><p class="text-sm mt-sm">但它根本不卖皮质醇产品 — 纯镁粉，零皮质醇成分</p></div>
+<div class="card card-red"><div class="label red">❌ 相信标签分类</div><div class="mt-sm" style="font-size:48px;font-weight:700;color:var(--accent-red)">1/13</div><p class="text-sm">13个"Cortisol Support"ASIN中，1个是品类溢出者</p></div>
+</div>
+<div class="card anim-slideUp mt-md" style="animation-delay:0.3s;background:rgba(185,74,72,0.05)">
+<span class="label red">❌ 忽略成分面板</span><span class="text-lg" style="margin-left:var(--space-md)">5mg Ashwagandha 也算"含"？成分剂量比成分清单更重要</span>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 05 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label purple anim-fadeIn">认知升级</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:650px">GOBIOTIX — 品类之王是虚假的</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div style="opacity:0.5;padding:var(--space-lg)">
+<div class="label dim">数据告诉你的</div>
+<div style="font-size:28px;font-weight:600;color:var(--text-dim);margin-top:var(--space-sm);text-decoration:line-through;text-decoration-color:var(--accent-red)">$86K/月 · 2,506评论 · 品类第一</div>
+</div>
+<div style="padding:var(--space-lg);border-left:2px solid var(--accent-purple)">
+<div class="label purple">Supplement Facts 揭示的</div>
+<div style="font-size:26px;font-weight:600;color:var(--accent-purple);margin-top:var(--space-sm)">420mg 纯镁 · 零 Ashwagandha · 零 L-Theanine</div>
+<p class="text-sm dim mt-sm">6种镁形态复合，但无一皮质醇专用成分</p>
+</div>
+</div>
+<div class="card card-purple mt-lg anim-fadeIn" style="animation-delay:0.4s">
+<div class="label purple">归因机制</div>
+<p class="text-sm mt-sm">消费者搜索"cortisol"→ 亚马逊算法推荐镁产品 → 交叉购买 → 标签系统"行为归因"计入赛道。这是<br><strong>需求侧溢出</strong>，不是供给侧参与。</p>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 06 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">纠正后的赛道</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">剔除GOBIOTIX后的真实格局</h2>
+<div class="grid-3 anim-slideUp mb-md" style="animation-delay:0.15s">
+<div class="card card-green"><div class="label green">活跃竞品</div><div style="font-size:36px;font-weight:700;color:var(--accent-green)">12</div><div class="text-sm">纯皮质醇产品</div></div>
+<div class="card card-gold"><div class="label gold">品类月销</div><div style="font-size:36px;font-weight:700;color:var(--accent-gold)">$517K</div><div class="text-sm">剔除后总销售额</div></div>
+<div class="card card-blue"><div class="label blue">平均评分</div><div style="font-size:36px;font-weight:700;color:var(--accent-blue)">4.4★</div><div class="text-sm">品类质量基线</div></div>
+</div>
+<div class="card anim-slideUp" style="animation-delay:0.3s">
+<div class="label gold">Go-forward 竞品集</div>
+<div class="grid-2 mt-sm">
+<div style="padding-right:var(--space-md)">
+<div style="color:var(--accent-green);font-weight:600;margin-bottom:var(--space-xs)">✅ 12个纯皮质醇竞品</div>
+<div class="text-sm dim">VEV · Loroc'e · Venture Pal · UltraCalm · 10-IN-1 · Liquid · Vita PLynxera · TERRA ELMNT · Ashenutri · Cortisol Drops · Cortisol Caps · Cortisol Women</div>
+</div>
+<div style="border-left:1px solid rgba(255,255,255,0.08);padding-left:var(--space-md)">
+<div style="color:var(--accent-red);font-weight:600;margin-bottom:var(--space-xs)">❌ 5个从竞品集移除</div>
+<div class="text-sm dim">GOBIOTIX（品类溢出者） · 3个死亡品 · 1个Loroc'e濒死品</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 07 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第02章</div>
+<div class="gradient-text anim-slideUp" style="font-size:120px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">02</div>
+<h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">数据不会说谎</h1>
+<p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">深入每个产品的成分面板，揭示标签背后的真相。</p>
+</div>
+</section>
+
+<!-- SLIDE 08 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label purple anim-fadeIn">成分深挖</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">Top4 产品 Supplement Facts 精确对照</h2>
+<div class="data-table-container anim-slideUp" style="animation-delay:0.15s;overflow-x:auto">
+<table class="data-table">
+<thead><tr><th>产品</th><th>镁 (mg)</th><th>镁形态</th><th class="num">L-Theanine</th><th class="num">Ashwagandha</th><th>剂型</th><th class="num">份数</th></tr></thead>
+<tbody>
+<tr><td><strong>VEV DeepCalm</strong></td><td><span class="green">300mg (71%)</span></td><td>4种复合</td><td class="num green">400mg</td><td class="num green">300mg</td><td>胶囊</td><td class="num">60</td></tr>
+<tr><td><strong>GOBIOTIX*</strong></td><td><span class="red">420mg (100%)</span></td><td>6种复合</td><td class="num red">0</td><td class="num red">0</td><td>粉剂</td><td class="num">60</td></tr>
+<tr><td><strong>Loroc'e</strong></td><td><span class="warn">100mg (25%)</span></td><td>甘氨酸镁</td><td class="num green">400mg</td><td class="num green">300mg</td><td>粉剂包</td><td class="num">30</td></tr>
+<tr><td><strong>Venture Pal</strong></td><td><span class="warn">100mg (24%)</span></td><td>甘氨酸镁</td><td class="num warn">80mg</td><td class="num red">5mg</td><td>粉剂条</td><td class="num">16</td></tr>
+<tr><td><strong>Vita PLynxera</strong></td><td><span class="green">400mg (~95%)</span></td><td>甘氨酸镁</td><td class="num dim">含(量未标)</td><td class="num dim">含(量未标)</td><td>液态滴剂</td><td class="num">30</td></tr>
+</tbody></table></div>
+<div class="text-sm dim mt-sm anim-fadeIn" style="animation-delay:0.4s">*GOBIOTIX 为纯镁产品，在此仅作成分对比参考 | 数据来源：macOS Vision OCR 从 Amazon 产品页高清图提取</div>
+</div>
+</section>
+
+<!-- SLIDE 09 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label red anim-fadeIn">标签 vs 真相</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:650px">产品宣称 ≠ 成分有效剂量</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-red">
+<div class="label red">🔍 Venture Pal 的"含Ashwagandha"</div>
+<div class="text-lg mt-sm">标签说含 → 实际 <strong style="color:var(--accent-red)">仅 5mg</strong></div>
+<p class="text-sm mt-sm">有效剂量通常300-600mg/日。5mg ≈ 一杯花草茶的含量。这不是补剂，是风味饮料。</p>
+</div>
+<div class="card card-purple">
+<div class="label purple">🔍 Loroc'e 的"镁策略"</div>
+<div class="text-lg mt-sm">宣称含镁 → 实际 <strong style="color:var(--accent-purple)">仅 100mg (25% DV)</strong></div>
+<p class="text-sm mt-sm">产品核心竞争力不是镁，而是 L-Theanine 400mg + Ashwagandha 300mg 的"皮质醇管理组合"。</p>
+</div>
+</div>
+<div class="card card-green mt-md anim-slideUp" style="animation-delay:0.3s">
+<div class="label green">🏆 成分最均衡：VEV</div>
+<div class="text-lg mt-sm" style="color:var(--accent-green)">镁300mg + L-Theanine 400mg + Ashwagandha 300mg + 11种草药混合物</div>
+<p class="text-sm mt-sm">每份$0.23，是品类中性价比最高的"有效剂量"产品。</p>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 10 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label blue anim-fadeIn">剂型革命</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:650px">消费者正在从胶囊转向饮料</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div>
+<div class="card card-blue mb-md">
+<div class="label blue">📊 剂型分布 (12个竞品)</div>
+<div style="margin-top:var(--space-sm)">
+<div style="display:flex;align-items:center;margin-bottom:8px"><span style="width:80px;color:var(--text-secondary);font-size:13px">粉剂饮料</span><div style="flex:1;height:20px;background:var(--accent-blue);opacity:0.6;border-radius:4px;width:58%"></div><span style="margin-left:8px;font-size:14px;font-weight:600;color:var(--accent-blue)">7个</span></div>
+<div style="display:flex;align-items:center;margin-bottom:8px"><span style="width:80px;color:var(--text-secondary);font-size:13px">素食胶囊</span><div style="flex:1;height:20px;background:var(--accent-green);opacity:0.6;border-radius:4px;width:25%"></div><span style="margin-left:8px;font-size:14px;font-weight:600;color:var(--accent-green)">3个</span></div>
+<div style="display:flex;align-items:center"><span style="width:80px;color:var(--text-secondary);font-size:13px">液态滴剂</span><div style="flex:1;height:20px;background:var(--accent-purple);opacity:0.6;border-radius:4px;width:17%"></div><span style="margin-left:8px;font-size:14px;font-weight:600;color:var(--accent-purple)">2个</span></div>
+</div>
+</div>
+</div>
+<div>
+<div class="card">
+<div class="text-lg" style="font-weight:600">💡 战略启示</div>
+<p class="text-sm mt-sm" style="color:var(--accent-blue)">58%的竞品是粉剂/液体饮料形态。这不是品类增长，而是<strong>剂型迁移</strong>——消费者从"吃药"转向"喝饮料"。</p>
+<p class="text-sm mt-sm dim">粉剂=便携+仪式感+高溢价。Loroc'e $24/30份 vs VEV胶囊$14/60份 → 粉剂每份贵3.5倍。</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 11 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">定价策略</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">价格分布揭示四种商业模式</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green"><div class="label green">💰 低价走量</div><div class="text-lg mt-sm" style="color:var(--accent-green)">VEV $14.2</div><p class="text-sm mt-sm">品类最低价，但15种真实成分。月销6,351件，品类最高销量。牺牲毛利换市场份额。</p></div>
+<div class="card card-gold"><div class="label gold">💰 中价主力</div><div class="text-lg mt-sm" style="color:var(--accent-gold)">$20-$25</div><p class="text-sm mt-sm">Venture Pal $20.9 · Vita $22.4 · Loroc'e $24.0 · 10-IN-1 $24.8。品类主力价格带。</p></div>
+<div class="card card-blue"><div class="label blue">💰 高端溢价</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">$26-$30</div><p class="text-sm mt-sm">UltraCalm $25.9 · Liquid $27.9 · TERRA ELMNT $29.9。苏糖酸镁等高溢价成分支撑定价。</p></div>
+<div class="card card-red"><div class="label red">💰 低价陷阱</div><div class="text-lg mt-sm" style="color:var(--accent-red)">$10-$18</div><p class="text-sm mt-sm">Cortisol Caps $18 · Cortisol Women $20 · Cortisol Drops $20。低价但低量，可能赔钱。</p></div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 12 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">品类基准线</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">剔除GOBIOTIX后的品类指标重算</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-gold">
+<table class="data-table">
+<thead><tr><th>指标</th><th class="num">修正后（12品）</th><th class="num">原值（含GOBIOTIX）</th></tr></thead>
+<tbody>
+<tr><td>品类月销额</td><td class="num">$517,036</td><td class="num">$603,058</td></tr>
+<tr><td>品类月销量</td><td class="num">26,652件</td><td class="num">30,157件</td></tr>
+<tr><td>中位月销额</td><td class="num">$47,780</td><td class="num">$48,042</td></tr>
+<tr><td>均价中位数</td><td class="num">$22.4</td><td class="num">$22.6</td></tr>
+<tr><td>平均评分</td><td class="num">4.4★</td><td class="num">4.2★</td></tr>
+<tr><td>总评论数</td><td class="num">2,802</td><td class="num">5,533</td></tr>
+</tbody></table>
+</div>
+<div class="card card-purple" style="display:flex;flex-direction:column;justify-content:center">
+<div class="label purple">关键变化</div>
+<div class="text-lg mt-sm" style="color:var(--accent-purple)">品类月销额 -14%</div>
+<p class="text-sm mt-sm">GOBIOTIX 一家就占了14%的品类销售额。剔除后品类更"干净"，但也更"小"。</p>
+<div class="text-lg mt-md" style="color:var(--accent-purple)">平均评分 +0.2★</div>
+<p class="text-sm mt-sm">GOBIOTIX 4.3★略低于品类均值，剔除后品质指标改善。</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 13 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第03章</div>
+<div class="gradient-text anim-slideUp" style="font-size:120px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">03</div>
+<h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">BCG 竞争矩阵</h1>
+<p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">四象限定位 · 明星/现金牛/问题儿童/瘦狗 · 谁该打、谁该跟、谁该放。</p>
+</div>
+</section>
+
+<!-- SLIDE 14 -->
+<section class="slide">
+<div class="slide-content wide">
+<div class="label green anim-fadeIn">核心图表</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">BCG 竞争矩阵 · 12个纯皮质醇竞品</h2>
+<div class="chart-container anim-slideUp wide" style="animation-delay:0.15s">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 600" class="bcg-plot">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#111933"/><stop offset="100%" stop-color="#0D1326"/></linearGradient>
+  </defs>
+  <rect width="700" height="600" fill="url(#bgGrad)" rx="12"/>
+  <line x1="80" y1="410.64" x2="650" y2="410.64" stroke="rgba(201,169,110,0.3)" stroke-width="1" stroke-dasharray="6,4"/>
+  <line x1="281.21" y1="540" x2="281.21" y2="50" stroke="rgba(201,169,110,0.3)" stroke-width="1" stroke-dasharray="6,4"/>
+  <text x="108.5" y="98.99999999999999" fill="#5B8DEF" font-size="11" font-weight="600" opacity="0.7">问题儿童</text>
+  <text x="479.0" y="98.99999999999999" fill="#2E9B6F" font-size="11" font-weight="600" opacity="0.7">明星 Star</text>
+  <text x="108.5" y="466.5" fill="#B94A48" font-size="11" font-weight="600" opacity="0.7">瘦狗 Dog</text>
+  <text x="479.0" y="466.5" fill="#C9A96E" font-size="11" font-weight="600" opacity="0.7">现金牛 Cash Cow</text>
+  <circle cx="400.34000000000003" cy="408.68" r="14.716545454545454" fill="#2E9B6F" opacity="0.25"/>
+  <circle cx="400.34000000000003" cy="408.68" r="7.358272727272727" fill="#4AB88A" stroke="#2E9B6F" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="400.34000000000003" y="387.96345454545457" text-anchor="middle" fill="#4AB88A" font-size="10" font-weight="600">UltraCalm</text>
+  <circle cx="517.19" cy="438.08000000000004" r="13.121818181818181" fill="#C9A96E" opacity="0.25"/>
+  <circle cx="517.19" cy="438.08000000000004" r="6.560909090909091" fill="#DFC896" stroke="#C9A96E" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="517.19" y="418.95818181818186" text-anchor="middle" fill="#DFC896" font-size="10" font-weight="600">Venture</text>
+  <circle cx="326.81" cy="472.38" r="10.838727272727272" fill="#C9A96E" opacity="0.25"/>
+  <circle cx="326.81" cy="472.38" r="5.419363636363636" fill="#DFC896" stroke="#C9A96E" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="326.81" y="455.5412727272727" text-anchor="middle" fill="#DFC896" font-size="10" font-weight="600">10-IN-1</text>
+  <circle cx="562.22" cy="258.25" r="10.769454545454545" fill="#2E9B6F" opacity="0.25"/>
+  <circle cx="562.22" cy="258.25" r="5.384727272727273" fill="#4AB88A" stroke="#2E9B6F" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="562.22" y="241.48054545454545" text-anchor="middle" fill="#4AB88A" font-size="10" font-weight="600">VEV</text>
+  <circle cx="298.31" cy="417.01" r="9.896181818181818" fill="#C9A96E" opacity="0.25"/>
+  <circle cx="298.31" cy="417.01" r="4.948090909090909" fill="#DFC896" stroke="#C9A96E" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="298.31" y="401.11381818181815" text-anchor="middle" fill="#DFC896" font-size="10" font-weight="600">Vita</text>
+  <circle cx="278.92999999999995" cy="224.44" r="8.73490909090909" fill="#5B8DEF" opacity="0.25"/>
+  <circle cx="278.92999999999995" cy="224.44" r="4.367454545454545" fill="#87AEF5" stroke="#5B8DEF" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="278.92999999999995" y="209.7050909090909" text-anchor="middle" fill="#87AEF5" font-size="10" font-weight="600">Loroc'e</text>
+  <circle cx="281.21" cy="513.05" r="8.639636363636363" fill="#C9A96E" opacity="0.25"/>
+  <circle cx="281.21" cy="513.05" r="4.319818181818182" fill="#DFC896" stroke="#C9A96E" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="281.21" y="498.41036363636357" text-anchor="middle" fill="#DFC896" font-size="10" font-weight="600">Liquid</text>
+  <circle cx="176.9" cy="410.64" r="5.194909090909091" fill="#5B8DEF" opacity="0.25"/>
+  <circle cx="176.9" cy="410.64" r="2.5974545454545455" fill="#87AEF5" stroke="#5B8DEF" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="176.9" y="399.4450909090909" text-anchor="middle" fill="#87AEF5" font-size="10" font-weight="600">Triple</text>
+  <circle cx="150.68" cy="298.92" r="5.086181818181818" fill="#5B8DEF" opacity="0.25"/>
+  <circle cx="150.68" cy="298.92" r="2.543090909090909" fill="#87AEF5" stroke="#5B8DEF" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="150.68" y="287.8338181818182" text-anchor="middle" fill="#87AEF5" font-size="10" font-weight="600">Cortisol</text>
+  <circle cx="106.22" cy="409.17" r="5" fill="#5B8DEF" opacity="0.25"/>
+  <circle cx="106.22" cy="409.17" r="2.5" fill="#87AEF5" stroke="#5B8DEF" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="106.22" y="398.17" text-anchor="middle" fill="#87AEF5" font-size="10" font-weight="600">Ashenutri</text>
+  <circle cx="103.94" cy="461.10999999999996" r="5" fill="#B94A48" opacity="0.25"/>
+  <circle cx="103.94" cy="461.10999999999996" r="2.5" fill="#D47371" stroke="#B94A48" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="103.94" y="450.10999999999996" text-anchor="middle" fill="#D47371" font-size="10" font-weight="600">Cortisol</text>
+  <circle cx="103.94" cy="431.22" r="5" fill="#B94A48" opacity="0.25"/>
+  <circle cx="103.94" cy="431.22" r="2.5" fill="#D47371" stroke="#B94A48" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="103.94" y="420.22" text-anchor="middle" fill="#D47371" font-size="10" font-weight="600">Cortisol</text>
+  <text x="365.0" y="588" text-anchor="middle" fill="#8892B0" font-size="11">← 相对市场份额（销售额+评论） →</text>
+  <text x="18" y="295.0" text-anchor="middle" fill="#8892B0" font-size="11">← 增长潜力 ↑</text>
+</svg>
+</div>
+<div class="text-sm dim mt-sm anim-fadeIn" style="animation-delay:0.4s;display:flex;gap:var(--space-lg)">
+<span>● 气泡大小 = 月销售额</span><span style="color:var(--accent-green)">● 明星</span><span style="color:var(--accent-gold)">● 现金牛</span><span style="color:var(--accent-blue)">● 问题儿童</span><span style="color:var(--accent-red)">● 瘦狗</span><span>虚线 = 品类中位数</span>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 15 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">象限概览</div>
+<h2 class="anim-slideUp mb-md" style="max-width:700px">四象限分布全景</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="chart-container"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 350">
+  <rect width="500" height="350" fill="#111933" rx="12"/>
+  <text x="20" y="30" fill="#C9A96E" font-size="14" font-weight="600">象限分布</text>
+  <text x="20" y="78" fill="#8892B0" font-size="12">⭐ 明星 Star</text>
+  <rect x="170" y="60" width="150.0" height="45" fill="#2E9B6F" opacity="0.7" rx="4"/>
+  <text x="325.0" y="90" fill="#E8ECF4" font-size="18" font-weight="700">2</text>
+  <text x="20" y="143" fill="#8892B0" font-size="12">💰 现金牛 Cow</text>
+  <rect x="170" y="125" width="300.0" height="45" fill="#C9A96E" opacity="0.7" rx="4"/>
+  <text x="475.0" y="155" fill="#E8ECF4" font-size="18" font-weight="700">4</text>
+  <text x="20" y="208" fill="#8892B0" font-size="12">❓ 问题儿童</text>
+  <rect x="170" y="190" width="300.0" height="45" fill="#5B8DEF" opacity="0.7" rx="4"/>
+  <text x="475.0" y="220" fill="#E8ECF4" font-size="18" font-weight="700">4</text>
+  <text x="20" y="273" fill="#8892B0" font-size="12">🐶 瘦狗 Dog</text>
+  <rect x="170" y="255" width="150.0" height="45" fill="#B94A48" opacity="0.7" rx="4"/>
+  <text x="325.0" y="285" fill="#E8ECF4" font-size="18" font-weight="700">2</text></svg></div>
+<div style="display:flex;flex-direction:column;gap:var(--space-sm)">
+<div class="card card-green"><div class="label green">⭐ 明星 (2)</div><div class="text-sm mt-sm">高份额+高增长。VEV Capsules · UltraCalm。品类增长引擎。</div></div>
+<div class="card card-gold"><div class="label gold">💰 现金牛 (4)</div><div class="text-sm mt-sm">高份额+低增长。Venture Pal · 10-IN-1 · Vita · Liquid。稳定现金流。</div></div>
+<div class="card card-blue"><div class="label blue">❓ 问题儿童 (4)</div><div class="text-sm mt-sm">低份额+高增长。Loroc'e · TERRA ELMNT · Cortisol Caps · Ashenutri。潜力股。</div></div>
+<div class="card card-red"><div class="label red">🐶 瘦狗 (2)</div><div class="text-sm mt-sm">低份额+低增长。Cortisol Drops · Cortisol Women。考虑退出。</div></div>
+</div>
+</div>
+<div class="text-sm dim mt-sm anim-fadeIn" style="animation-delay:0.3s">分界线使用品类中位数：相对份额 X≥0.353 → 高份额 | 增长潜力 Y≥0.264 → 高增长</div>
+</div>
+</section>
+
+<!-- SLIDE 16 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">明星产品 ⭐</div>
+<h2 class="anim-slideUp mb-md" style="max-width:700px;color:var(--accent-green)">VEV DeepCalm 15-in-1 — 真正的品类之王</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div>
+<div class="grid-3 mb-md">
+<div class="card card-green"><div class="label green">月销售额</div><div style="font-size:24px;font-weight:700;color:var(--accent-green)">$59K</div></div>
+<div class="card card-green"><div class="label green">Q1增速</div><div style="font-size:24px;font-weight:700;color:var(--accent-green)">+108%</div></div>
+<div class="card card-green"><div class="label green">评分</div><div style="font-size:24px;font-weight:700;color:var(--accent-green)">4.6★</div></div>
+</div>
+<div class="card card-green">
+<div class="label green">核心优势</div>
+<p class="text-sm mt-sm">镁300mg + L-Theanine 400mg + Ashwagandha 300mg + 11种草药混合。品类中<strong>唯一</strong>达到三成分有效剂量。</p>
+</div>
+</div>
+<div class="card">
+<div class="label gold">5维评分卡</div>
+<table class="data-table"><tbody>
+<tr><td>市场份额</td><td class="num">★★★★☆</td><td class="dim">销量第一但均价最低</td></tr>
+<tr><td>增长潜力</td><td class="num">★★★★★</td><td class="dim">108%爆发增长</td></tr>
+<tr><td>品牌护城河</td><td class="num">★★★★☆</td><td class="dim">4.6★+995评论</td></tr>
+<tr><td>产品差异化</td><td class="num">★★★★☆</td><td class="dim">15-in-1复合配方</td></tr>
+<tr><td>利润结构</td><td class="num">★★★☆☆</td><td class="dim">$14.2低价策略</td></tr>
+</tbody></table>
+</div>
+</div>
+<div class="text-sm dim mt-sm anim-fadeIn" style="animation-delay:0.3s">🔑 进攻型明星。极致性价比+高评分+多ASIN矩阵吃搜索流量。$3K预算中应分配最大比例对标。</div>
+</div>
+</section>
+
+<!-- SLIDE 17 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">明星产品 ⭐</div>
+<h2 class="anim-slideUp mb-md" style="max-width:700px;color:var(--accent-green)">UltraCalm Super Cortisol Drink — 临界明星</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div>
+<div class="grid-3 mb-md">
+<div class="card card-green"><div class="label green">月销售额</div><div style="font-size:24px;font-weight:700;color:var(--accent-green)">$81K</div></div>
+<div class="card card-green"><div class="label green">Q1增速</div><div style="font-size:24px;font-weight:700;color:var(--accent-green)">+18%</div></div>
+<div class="card card-green"><div class="label green">评分</div><div style="font-size:24px;font-weight:700;color:var(--accent-green)">4.4★</div></div>
+</div>
+<div class="card card-gold">
+<div class="label gold">⚠️ 注意：Loroc'e内部博弈</div>
+<p class="text-sm mt-sm">Loroc'e有3个皮质醇ASIN。B0DYXJ4JJ7（问题儿童，+209%增速）正在被战略性倾斜资源。UltaCalm Y指数刚过中位数（0.268 vs 0.264），<strong>可能滑向现金牛</strong>。</p>
+</div>
+</div>
+<div class="card">
+<div class="label gold">5维评分卡</div>
+<table class="data-table"><tbody>
+<tr><td>市场份额</td><td class="num">★★★★☆</td><td class="dim">品类第2销售额</td></tr>
+<tr><td>增长潜力</td><td class="num">★★☆☆☆</td><td class="dim">增速刚过中位数</td></tr>
+<tr><td>品牌护城河</td><td class="num">★★★☆☆</td><td class="dim">523评论，中等壁垒</td></tr>
+<tr><td>产品差异化</td><td class="num">★★★☆☆</td><td class="dim">粉剂冲饮，非独特</td></tr>
+<tr><td>利润结构</td><td class="num">★★★★☆</td><td class="dim">$25.9高溢价</td></tr>
+</tbody></table>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 18 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">现金牛 💰</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px;color:var(--accent-gold)">4个现金牛 — 稳定但需警惕</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-gold"><div class="label gold">Venture Pal</div><div class="text-lg mt-sm" style="color:var(--accent-gold)">$72K/月</div><div class="text-sm">+11%增速 | 4.3★ | $20.9<br>成分最散(Ashwa仅5mg)，但品牌矩阵强</div></div>
+<div class="card card-gold"><div class="label gold">10-IN-1 (Lukaree)</div><div class="text-lg mt-sm" style="color:var(--accent-gold)">$60K/月</div><div class="text-sm"><span class="down">-17.6%增速</span> | 4.3★ | $24.8<br>⚠️ Q1萎缩中，趋势持续恶化</div></div>
+<div class="card card-gold"><div class="label gold">Vita PLynxera</div><div class="text-lg mt-sm" style="color:var(--accent-gold)">$54K/月</div><div class="text-sm">+10%增速 | 4.4★ | $22.4<br>唯一液态滴剂，差异化护城河</div></div>
+<div class="card card-gold"><div class="label gold">Liquid Anti Stress</div><div class="text-lg mt-sm" style="color:var(--accent-gold)">$48K/月</div><div class="text-sm"><span class="down">-15.4%增速</span> | 4.1★ | $27.9<br>数据不全，评论数缺失</div></div>
+</div>
+<div class="card card-red mt-md anim-slideUp" style="animation-delay:0.3s">
+<div class="label red">⚠️ 现金牛预警</div>
+<p class="text-sm mt-sm">10-IN-1 和 Liquid 都在萎缩。Venture Pal 成分最"散"但品牌最强。这些产品需要<strong>最低维护投入</strong>而非追加投资。</p>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 19 -->
+<section class="slide">
+<div class="slide-content wide">
+<div class="label blue anim-fadeIn">趋势数据</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">Top5 竞品 18个月月度销量趋势</h2>
+<div class="chart-container anim-slideUp wide" style="animation-delay:0.15s">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 420">
+  <rect width="750" height="420" fill="#111933" rx="12"/>
+  <text x="20" y="30" fill="#C9A96E" font-size="14" font-weight="600">Top5 月度销量趋势</text>
+  <line x1="70" y1="40" x2="70" y2="350" stroke="#4A5578" stroke-width="1"/>
+  <line x1="70" y1="350.0" x2="730" y2="350.0" stroke="rgba(74,85,120,0.2)" stroke-width="0.5"/>
+  <text x="62" y="354.0" text-anchor="end" fill="#4A5578" font-size="9">0K</text>
+  <line x1="70" y1="288.0" x2="730" y2="288.0" stroke="rgba(74,85,120,0.2)" stroke-width="0.5"/>
+  <text x="62" y="292.0" text-anchor="end" fill="#4A5578" font-size="9">2K</text>
+  <line x1="70" y1="226.0" x2="730" y2="226.0" stroke="rgba(74,85,120,0.2)" stroke-width="0.5"/>
+  <text x="62" y="230.0" text-anchor="end" fill="#4A5578" font-size="9">3K</text>
+  <line x1="70" y1="164.0" x2="730" y2="164.0" stroke="rgba(74,85,120,0.2)" stroke-width="0.5"/>
+  <text x="62" y="168.0" text-anchor="end" fill="#4A5578" font-size="9">5K</text>
+  <line x1="70" y1="101.99999999999999" x2="730" y2="101.99999999999999" stroke="rgba(74,85,120,0.2)" stroke-width="0.5"/>
+  <text x="62" y="105.99999999999999" text-anchor="end" fill="#4A5578" font-size="9">7K</text>
+  <line x1="70" y1="40.0" x2="730" y2="40.0" stroke="rgba(74,85,120,0.2)" stroke-width="0.5"/>
+  <text x="62" y="44.0" text-anchor="end" fill="#4A5578" font-size="9">9K</text><text x="70.0" y="366" text-anchor="middle" fill="#4A5578" font-size="9">24-11月</text><text x="186.47058823529414" y="366" text-anchor="middle" fill="#4A5578" font-size="9">25-02月</text><text x="302.9411764705883" y="366" text-anchor="middle" fill="#4A5578" font-size="9">25-05月</text><text x="419.4117647058824" y="366" text-anchor="middle" fill="#4A5578" font-size="9">25-08月</text><text x="535.8823529411766" y="366" text-anchor="middle" fill="#4A5578" font-size="9">25-11月</text><text x="652.3529411764706" y="366" text-anchor="middle" fill="#4A5578" font-size="9">26-02月</text>
+  <polyline points="380.6,349.6 L419.4,272.3 L458.2,156.1 L497.1,170.7 L535.9,239.0 L574.7,260.0 L613.5,246.6 L652.4,237.1 L691.2,228.5 L730.0,212.2" fill="none" stroke="#C9A96E" stroke-width="2" opacity="0.8"/>
+  <circle cx="730.0" cy="212.2" r="4" fill="#C9A96E"/>
+  <text x="736.0" y="216.2" fill="#C9A96E" font-size="10" font-weight="600">UltraCalm</text>
+  <polyline points="147.6,348.3 L186.5,262.4 L225.3,233.1 L264.1,263.2 L302.9,265.6 L341.8,230.0 L380.6,206.3 L419.4,192.4 L458.2,201.2 L497.1,210.2 L535.9,205.2 L574.7,247.9 L613.5,227.7 L652.4,236.9 L691.2,214.3 L730.0,207.9" fill="none" stroke="#5B8DEF" stroke-width="2" opacity="0.8"/>
+  <circle cx="730.0" cy="207.9" r="4" fill="#5B8DEF"/>
+  <text x="736.0" y="211.9" fill="#5B8DEF" font-size="10" font-weight="600">Venture</text>
+  <polyline points="70.0,345.6 L108.8,301.1 L147.6,285.0 L186.5,282.0 L225.3,262.8 L264.1,216.0 L302.9,269.5 L341.8,223.3 L380.6,218.0 L419.4,256.0 L458.2,263.6 L497.1,250.3 L535.9,256.6 L574.7,274.9 L613.5,252.7 L652.4,268.1 L691.2,269.8 L730.0,283.3" fill="none" stroke="#8B5CF6" stroke-width="2" opacity="0.8"/>
+  <circle cx="730.0" cy="283.3" r="4" fill="#8B5CF6"/>
+  <text x="736.0" y="287.3" fill="#8B5CF6" font-size="10" font-weight="600">10-IN-1</text>
+  <polyline points="70.0,345.5 L108.8,334.1 L147.6,305.9 L186.5,304.9 L225.3,295.0 L264.1,303.1 L302.9,300.5 L341.8,302.7 L380.6,272.1 L419.4,271.4 L458.2,242.0 L497.1,189.6 L535.9,200.6 L574.7,244.3 L613.5,240.2 L652.4,198.8 L691.2,122.1 L730.0,91.7" fill="none" stroke="#2E9B6F" stroke-width="2" opacity="0.8"/>
+  <circle cx="730.0" cy="91.7" r="4" fill="#2E9B6F"/>
+  <text x="736.0" y="95.7" fill="#2E9B6F" font-size="10" font-weight="600">VEV</text>
+  <polyline points="70.0,315.2 L108.8,287.2 L147.6,295.1 L186.5,267.5 L225.3,201.7 L264.1,176.0 L302.9,222.2 L341.8,238.9 L380.6,250.2 L419.4,252.5 L458.2,253.7 L497.1,244.8 L535.9,249.0 L574.7,281.2 L613.5,261.7 L652.4,274.1 L691.2,252.5 L730.0,258.5" fill="none" stroke="#B94A48" stroke-width="2" opacity="0.8"/>
+  <circle cx="730.0" cy="258.5" r="4" fill="#B94A48"/>
+  <text x="736.0" y="262.5" fill="#B94A48" font-size="10" font-weight="600">Vita</text></svg>
+</div>
+<div class="grid-2 mt-md anim-fadeIn" style="animation-delay:0.4s">
+<div class="text-sm dim">🔍 Loroc'e 的"V型反弹"：2025年8月冲高后腰斩，2026年重新爆发。这是品牌方主动做SKU迭代的信号。</div>
+<div class="text-sm dim">🔍 VEV 的"稳健爬坡"：从0到7,200件/月，21个月持续增长。无大起大落，说明不是促销驱动。</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 20 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label blue anim-fadeIn">问题儿童 ❓</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px;color:var(--accent-blue)">4个问题儿童 — 潜力还是陷阱？</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-blue"><div class="label blue">Loroc'e B0DY</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">$48K/月 | +209%</div><p class="text-sm mt-sm">品类最高增速！但份额刚过中位数线。Nello式品牌路线的最强候选。</p><span class="tag tag-green">✅ 加大投入</span></div>
+<div class="card card-blue"><div class="label blue">TERRA ELMNT</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">$29K/月 | -2.5%</div><p class="text-sm mt-sm">L-Threonate唯一玩家。但增速为负、评论极低。品类错配风险大。</p><span class="tag tag-red">⚠️ 重新定位</span></div>
+<div class="card card-blue"><div class="label blue">Cortisol Caps</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">$28K/月 | 0%</div><p class="text-sm mt-sm">3月销量归零！可能是Lukaree被放弃的SKU。需立即确认状态。</p><span class="tag tag-red">⛔ 观察/放弃</span></div>
+<div class="card card-blue"><div class="label blue">Ashenutri</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">$14K/月 | +17%</div><p class="text-sm mt-sm">小而美但有增长。体量太小，$14K月销在品类中几乎可以忽略。</p><span class="tag tag-gold">⚠️ 观察3月</span></div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 21 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label red anim-fadeIn">瘦狗 🐶</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px;color:var(--accent-red)">2个瘦狗 — 考虑退出</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-red"><div class="label red">Cortisol Drops MRMXB8</div><div class="text-lg mt-sm" style="color:var(--accent-red)">$14K/月 | +10%</div><p class="text-sm mt-sm">与Vita PLynxera同为液态滴剂但品牌力更弱。可能是同一卖家的AB测试listing。50评论，几乎零壁垒。</p></div>
+<div class="card card-red"><div class="label red">Cortisol Women K1W49G</div><div class="text-lg mt-sm" style="color:var(--accent-red)">$10K/月 | <span class="down">-38%</span></div><p class="text-sm mt-sm">快速衰退中。$10K月销对皮质醇品类来说太低了。不值得投入任何资源。</p></div>
+</div>
+<div class="card mt-md anim-slideUp" style="animation-delay:0.3s;background:rgba(185,74,72,0.03)">
+<div class="label red">💀 另外4个已死亡/濒死</div>
+<div class="text-sm mt-sm">3个ASIN已完全停售（Q1=0），1个Loroc'e濒死品（$890/月）。这些产品从竞争中移除，不参与BCG分类。</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 22 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第04章</div>
+<div class="gradient-text anim-slideUp" style="font-size:120px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">04</div>
+<h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">成分军备竞赛</h1>
+<p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">谁在真正做产品？谁在卖概念？成分剂量揭示胜负手。</p>
+</div>
+</section>
+
+<!-- SLIDE 23 -->
+<section class="slide">
+<div class="slide-content wide">
+<div class="label purple anim-fadeIn">成分对比</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">Top5 产品关键成分剂量对比</h2>
+<div class="chart-container anim-slideUp wide" style="animation-delay:0.15s">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 380">
+  <rect width="650" height="380" fill="#111933" rx="12"/>
+  <text x="20" y="30" fill="#C9A96E" font-size="14" font-weight="600">关键成分剂量对比 (mg/份)</text>
+  <circle cx="470" cy="22" r="5" fill="#2E9B6F"/><text x="482" y="26" fill="#8892B0" font-size="10">镁 Mg</text>
+  <circle cx="550" cy="22" r="5" fill="#5B8DEF"/><text x="562" y="26" fill="#8892B0" font-size="10">L-Theanine</text>
+  <circle cx="420" cy="22" r="5" fill="#8B5CF6"/><text x="432" y="26" fill="#8892B0" font-size="10">Ashwagandha</text>
+  <text x="610" y="26" fill="#B94A48" font-size="9">*纯镁产品</text>
+  <text x="20" y="77" fill="#E8ECF4" font-size="13" font-weight="600">VEV Capsules</text>
+  <rect x="130" y="55" width="333.3333333333333" height="14" fill="#2E9B6F" opacity="0.8" rx="3"/>
+  <text x="469.3333333333333" y="67" fill="#2E9B6F" font-size="11" font-weight="600">300mg</text>
+  <rect x="130" y="73" width="444.44444444444434" height="14" fill="#5B8DEF" opacity="0.8" rx="3"/>
+  <text x="580.4444444444443" y="85" fill="#5B8DEF" font-size="11" font-weight="600">400mg</text>
+  <rect x="130" y="91" width="333.3333333333333" height="14" fill="#8B5CF6" opacity="0.8" rx="3"/>
+  <text x="469.3333333333333" y="103" fill="#8B5CF6" font-size="11" font-weight="600">300mg</text>
+  <text x="20" y="137" fill="#E8ECF4" font-size="13" font-weight="600">GOBIOTIX*</text>
+  <rect x="130" y="115" width="466.66666666666674" height="14" fill="#2E9B6F" opacity="0.8" rx="3"/>
+  <text x="602.6666666666667" y="127" fill="#2E9B6F" font-size="11" font-weight="600">420mg</text>
+  <rect x="130" y="133" width="0.0" height="14" fill="#5B8DEF" opacity="0.8" rx="3"/>
+  <text x="136.0" y="145" fill="#5B8DEF" font-size="11" font-weight="600">0mg</text>
+  <rect x="130" y="151" width="0.0" height="14" fill="#8B5CF6" opacity="0.8" rx="3"/>
+  <text x="136.0" y="163" fill="#8B5CF6" font-size="11" font-weight="600">0mg</text>
+  <text x="20" y="197" fill="#E8ECF4" font-size="13" font-weight="600">Loroc'e</text>
+  <rect x="130" y="175" width="111.11111111111109" height="14" fill="#2E9B6F" opacity="0.8" rx="3"/>
+  <text x="247.1111111111111" y="187" fill="#2E9B6F" font-size="11" font-weight="600">100mg</text>
+  <rect x="130" y="193" width="444.44444444444434" height="14" fill="#5B8DEF" opacity="0.8" rx="3"/>
+  <text x="580.4444444444443" y="205" fill="#5B8DEF" font-size="11" font-weight="600">400mg</text>
+  <rect x="130" y="211" width="333.3333333333333" height="14" fill="#8B5CF6" opacity="0.8" rx="3"/>
+  <text x="469.3333333333333" y="223" fill="#8B5CF6" font-size="11" font-weight="600">300mg</text>
+  <text x="20" y="257" fill="#E8ECF4" font-size="13" font-weight="600">Venture Pal</text>
+  <rect x="130" y="235" width="111.11111111111109" height="14" fill="#2E9B6F" opacity="0.8" rx="3"/>
+  <text x="247.1111111111111" y="247" fill="#2E9B6F" font-size="11" font-weight="600">100mg</text>
+  <rect x="130" y="253" width="88.88888888888889" height="14" fill="#5B8DEF" opacity="0.8" rx="3"/>
+  <text x="224.88888888888889" y="265" fill="#5B8DEF" font-size="11" font-weight="600">80mg</text>
+  <rect x="130" y="271" width="5.555555555555543" height="14" fill="#8B5CF6" opacity="0.8" rx="3"/>
+  <text x="141.55555555555554" y="283" fill="#8B5CF6" font-size="11" font-weight="600">5mg</text>
+  <text x="20" y="317" fill="#E8ECF4" font-size="13" font-weight="600">Vita PLynxera</text>
+  <rect x="130" y="295" width="444.44444444444434" height="14" fill="#2E9B6F" opacity="0.8" rx="3"/>
+  <text x="580.4444444444443" y="307" fill="#2E9B6F" font-size="11" font-weight="600">400mg</text>
+  <rect x="130" y="313" width="0.0" height="14" fill="#5B8DEF" opacity="0.8" rx="3"/>
+  <text x="136.0" y="325" fill="#5B8DEF" font-size="11" font-weight="600">0mg</text>
+  <rect x="130" y="331" width="0.0" height="14" fill="#8B5CF6" opacity="0.8" rx="3"/>
+  <text x="136.0" y="343" fill="#8B5CF6" font-size="11" font-weight="600">0mg</text></svg>
+</div>
+<div class="text-sm dim mt-sm anim-fadeIn" style="animation-delay:0.3s">GOBIOTIX*为纯镁产品，零皮质醇成分。VEV是唯一三成分均达有效剂量的产品。Venture Pal的Ashwagandha仅5mg≈无效。</div>
+</div>
+</section>
+
+<!-- SLIDE 24 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">剂量策略</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">三种配方哲学 vs 消费者认知</h2>
+<div class="grid-3 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green"><div class="label green">🎯 有效剂量派</div><div class="text-lg mt-sm" style="color:var(--accent-green)">VEV</div><p class="text-sm mt-sm">镁300mg + L-Theanine 400mg + Ashwa 300mg。三成分均达临床有效剂量范围。每份$0.23。</p></div>
+<div class="card card-blue"><div class="label blue">🎯 成分营销派</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">Venture Pal</div><p class="text-sm mt-sm">14种成分列在标签上，但关键成分剂量极低（Ashwa 5mg）。卖的是"看起来很全"的感知价值。</p></div>
+<div class="card card-purple"><div class="label purple">🎯 差异化剂量派</div><div class="text-lg mt-sm" style="color:var(--accent-purple)">Loroc'e</div><p class="text-sm mt-sm">镁仅100mg，但L-Theanine 400mg+Ashwa 300mg。产品不卖镁，卖"皮质醇管理组合"。</p></div>
+</div>
+<div class="card anim-slideUp mt-md" style="animation-delay:0.3s">
+<div class="label gold">💡 你的产品策略启示</div>
+<p class="text-sm mt-sm">有效剂量派（VEV模式）建立成分公信力 → 赢得评价和复购。成分营销派（Venture Pal模式）容易获取首次购买但复购率低。你的新品应该走<strong>VEV路线：三成分有效剂量+价格竞争力</strong>。</p>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 25 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label blue anim-fadeIn">剂型矩阵</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">剂型细分与竞争空白</h2>
+<table class="data-table anim-slideUp" style="animation-delay:0.15s">
+<thead><tr><th>剂型</th><th>产品数</th><th>代表</th><th>竞争强度</th><th>差异化机会</th></tr></thead>
+<tbody>
+<tr><td>粉剂饮料 (Drinkable)</td><td class="num">7</td><td>Loroc'e · Venture Pal · UltraCalm</td><td><span class="red">激烈</span></td><td>便携包+口味差异化</td></tr>
+<tr><td>素食胶囊 (Veggie Caps)</td><td class="num">3</td><td>VEV · 10-IN-1 · Ashenutri</td><td><span class="gold">中等</span></td><td>剂量优势+Vegan认证</td></tr>
+<tr><td>液态滴剂 (Liquid/Drop)</td><td class="num">2</td><td>Vita PLynxera · Cortisol Drops</td><td><span class="green">低</span></td><td><strong>唯一无竞争细分！</strong></td></tr>
+</tbody></table>
+<div class="card card-green mt-md anim-slideUp" style="animation-delay:0.3s">
+<div class="label green">🎯 空白机会：液态滴剂赛道</div>
+<p class="text-sm mt-sm">仅Vita PLynxera一个像样的玩家。如果新品推出液态滴剂+有效剂量+品牌化包装，可能独占一个品类子赛道。</p>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 26 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">成分洞察</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">3个改变决策的成分发现</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-purple"><div class="label purple">发现 1</div><div class="text-lg mt-sm" style="color:var(--accent-purple)">Loroc'e 不是"镁产品"</div><p class="text-sm mt-sm">100mg镁 vs VEV的300mg。Loroc'e卖的是L-Theanine+Ashwagandha的皮质醇管理组合。这意味着它的消费者画像不是"补镁人群"。</p></div>
+<div class="card card-red"><div class="label red">发现 2</div><div class="text-lg mt-sm" style="color:var(--accent-red)">Venture Pal 的Ashwa虚标</div><p class="text-sm mt-sm">标签宣称"含Ashwagandha"，实际5mg。这是补剂行业常见的"粉尘添加"——加了但不够量，只为上标签。</p></div>
+<div class="card card-green"><div class="label green">发现 3</div><div class="text-lg mt-sm" style="color:var(--accent-green)">VEV 的成分护城河是真实的</div><p class="text-sm mt-sm">11种草药混合物（Shilajit/Lion's Mane/Holy Basil等）+ 3成分有效剂量 = 几乎没有竞品能在$14价格点复制。</p></div>
+<div class="card card-blue"><div class="label blue">发现 4</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">TERRA ELMNT 品类错配</div><p class="text-sm mt-sm">L-Threonate用户更多在"脑力/认知"赛道。挂皮质醇标签可能是为了蹭搜索流量。</p></div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 27 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第05章</div>
+<div class="gradient-text anim-slideUp" style="font-size:120px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">05</div>
+<h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">Devil's Advocate</h1>
+<p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">批判性审视BCG框架本身。数据会骗人，矩阵也会。</p>
+</div>
+</section>
+
+<!-- SLIDE 28 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label red anim-fadeIn">框架盲区</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px;color:var(--accent-red)">BCG矩阵的5个天然盲区</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-red"><div class="label red">只看2维</div><p class="text-sm mt-sm">忽略品牌矩阵效应。VEV有多个ASIN相互导流，BCG看不出协同效应。</p></div>
+<div class="card card-red"><div class="label red">静态快照</div><p class="text-sm mt-sm">Q1均值抹掉趋势拐点。UltraCalm Y=0.268刚过线，但趋势在恶化。</p></div>
+<div class="card card-red"><div class="label red">品类均值陷阱</div><p class="text-sm mt-sm">皮质醇赛道高速增长，品类均值可能失真。"低增速"只是相对品类。</p></div>
+<div class="card card-red"><div class="label red">评论壁垒非线性</div><p class="text-sm mt-sm">0→500和500→1000的护城河完全不同。BCG把评论简单归一化。</p></div>
+<div class="card card-red" style="grid-column:span 2"><div class="label red">价格战忽略</div><p class="text-sm mt-sm">VEV $14.2低价可能不可持续，但BCG只看"现在的份额"不看"定价的可持续性"。</p></div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 29 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">误判风险</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">可能被BCG误判的3个产品</h2>
+<table class="data-table anim-slideUp" style="animation-delay:0.15s">
+<thead><tr><th>产品</th><th>BCG分类</th><th>可能的误判</th><th>真实情况可能是</th></tr></thead>
+<tbody>
+<tr><td><strong>UltraCalm</strong></td><td><span class="tag tag-green">⭐ 明星</span></td><td>Y=0.268刚过中位线0.264</td><td>实际是<strong>现金牛</strong>，Loroc'e在战略性放弃这个SKU</td></tr>
+<tr><td><strong>VEV Capsules</strong></td><td><span class="tag tag-green">⭐ 明星</span></td><td>107%增速可能有促销水分</td><td>剔除Coupon后真实增速可能30-50%，仍是明星</td></tr>
+<tr><td><strong>Vita PLynxera</strong></td><td><span class="tag tag-gold">💰 现金牛</span></td><td>154评论太低了，但增速健康</td><td><strong>可能是下一个明星的早期阶段</strong></td></tr>
+<tr><td><strong>Loroc'e B0DY</strong></td><td><span class="tag tag-blue">❓ 问题儿童</span></td><td>份额刚过中位数线</td><td>209%增速，如果维持Q3将进入明星象限</td></tr>
+</tbody></table>
+<div class="card mt-md anim-slideUp" style="animation-delay:0.3s">
+<div class="label gold">💡 教训</div>
+<p class="text-sm mt-sm">BCG是快照，不是预言。加上趋势线（如Slide 19）和品牌内部博弈分析（如下页），才能做真正有洞察的判断。</p>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 30 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label purple anim-fadeIn">真实动态</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">BCG看不到的3个真实竞争博弈</h2>
+<div class="anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-purple mb-md"><div class="label purple">🎭 Loroc'e 内部SKU迭代</div><p class="text-sm mt-sm">Loroc'e有3个皮质醇ASIN：（⭐明星UltaCalm / ❓问题儿童B0DY+209% / 💀濒死旧品）。B0DY的209%增速不是偶然 — 品牌方主动把资源从旧品倾注到新品。<strong>这是品类中最聪明的SKU管理策略</strong>。</p></div>
+<div class="card card-blue mb-md"><div class="label blue">🎭 VEV 双ASIN矩阵</div><p class="text-sm mt-sm">VEV的胶囊（明星）和软糖形成剂型矩阵。两个ASIN在搜索结果中互相导流，BCG单个看只能看到一半的竞争力。</p></div>
+<div class="card card-green"><div class="label green">🎭 粉剂饮料品类爆发</div><p class="text-sm mt-sm">12个活跃产品中7个是粉剂/液体饮料形态。这不是品类增长，是<strong>剂型迁移</strong>。消费者从"吃药"转向"喝饮料"。</p></div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 31 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第06章</div>
+<div class="gradient-text anim-slideUp" style="font-size:120px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">06</div>
+<h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">Nello 对标</h1>
+<p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">TikTok驱动的皮质醇标杆品牌。谁最有可能成为亚马逊版Nello？</p>
+</div>
+</section>
+
+<!-- SLIDE 32 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label purple anim-fadeIn">Nello 模式</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">Nello — TikTok驱动的皮质醇品牌标杆</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-purple">
+<div class="label purple">Nello 核心特征</div>
+<table class="data-table"><tbody>
+<tr><td>渠道</td><td><strong>TikTok Shop 主导</strong></td></tr>
+<tr><td>增长模式</td><td>病毒式 UGC 传播</td></tr>
+<tr><td>品牌叙事</td><td>生活方式品牌，"减压仪式感"</td></tr>
+<tr><td>客单价</td><td>$35-45（高溢价段）</td></tr>
+<tr><td>产品形态</td><td>粉剂冲饮（仪式感消费）</td></tr>
+<tr><td>差异化</td><td>不卖成分，卖"体验"</td></tr>
+</tbody></table>
+</div>
+<div class="card">
+<div class="label gold">Nello vs 传统亚马逊补剂</div>
+<p class="text-sm mt-sm" style="color:var(--accent-purple)">Nello 是<strong>社交电商品牌</strong>，不是搜索电商品牌。</p>
+<p class="text-sm mt-sm">传统亚马逊打法：关键词→搜索→比价→购买</p>
+<p class="text-sm mt-sm" style="color:var(--accent-purple)">Nello打法：TikTok种草→种草→冲动→购买</p>
+<p class="text-sm dim mt-sm">目标：在亚马逊复制Nello的增长曲线，用粉剂+强叙事+社交引流。</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 33 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label purple anim-fadeIn">对标矩阵</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">BCG竞品 vs Nello 差距分析</h2>
+<table class="data-table anim-slideUp" style="animation-delay:0.15s">
+<thead><tr><th>竞品</th><th>对Nello模仿度</th><th>关键差距</th><th>能成为Nello吗？</th></tr></thead>
+<tbody>
+<tr><td><strong>VEV Capsules</strong></td><td><span class="gold">中</span></td><td>有品牌矩阵意识，依赖低价</td><td><span class="gold">⚠️ 有可能</span></td></tr>
+<tr><td><strong>Loroc'e B0DY</strong></td><td><span class="green" style="font-weight:700">高</span></td><td>粉剂+"Super Cortisol"强叙事</td><td><span class="green" style="font-weight:700">✅ 最接近！</span></td></tr>
+<tr><td><strong>Venture Pal</strong></td><td><span class="gold">中</span></td><td>"Calm Drink Mix"定位但品牌弱</td><td><span class="gold">⚠️ 营销不足</span></td></tr>
+<tr><td><strong>Vita PLynxera</strong></td><td><span class="red">低</span></td><td>液态滴剂不是Nello路线</td><td><span class="red">❌ 品类错位</span></td></tr>
+<tr><td><strong>TERRA ELMNT</strong></td><td><span class="red">低</span></td><td>L-Threonate偏认知赛道</td><td><span class="red">❌ 品类错位</span></td></tr>
+</tbody></table>
+<div class="card card-green mt-md anim-slideUp" style="animation-delay:0.3s">
+<div class="label green">🎯 核心发现</div>
+<p class="text-sm mt-sm">Loroc'e B0DYXJ4JJ7 是唯一有潜力成为"亚马逊版Nello"的产品：粉剂饮料+强功效叙事+209%爆发增速。但它缺Nello最重要的武器：TikTok社交传播。</p>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 34 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第07章</div>
+<div class="gradient-text anim-slideUp" style="font-size:120px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">07</div>
+<h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">战略行动</h1>
+<p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">从分析到执行。$3,000/月预算的精确分配。</p>
+</div>
+</section>
+
+<!-- SLIDE 35 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">优先级排序</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">5个战略行动的优先级（$3,000/月PPC视角）</h2>
+<table class="data-table anim-slideUp" style="animation-delay:0.15s">
+<thead><tr><th>优先级</th><th>行动</th><th>目标</th><th class="num">预算建议</th></tr></thead>
+<tbody>
+<tr><td><span class="tag tag-green">🥇</span></td><td><strong>对标 VEV 的"低价+高评分+15合1"策略</strong></td><td>VEV是真正的品类之王</td><td class="num">35% <span class="dim">$1,050/月</span></td></tr>
+<tr><td><span class="tag tag-green">🥈</span></td><td><strong>紧盯 Loroc'e 的增速秘密</strong></td><td>209%增速+粉剂便携形态</td><td class="num">25% <span class="dim">$750/月</span></td></tr>
+<tr><td><span class="tag tag-gold">🥉</span></td><td><strong>抢占 Vita 的液态滴剂空白</strong></td><td>唯一液态剂型+400mg镁</td><td class="num">20% <span class="dim">$600/月</span></td></tr>
+<tr><td><span class="tag tag-gold">4</span></td><td><strong>警惕 Venture Pal 的饮料化降维</strong></td><td>$72K月销但成分最散</td><td class="num">15% <span class="dim">$450/月</span></td></tr>
+<tr><td><span class="tag tag-red">5</span></td><td><strong>忽略 GOBIOTIX</strong></td><td>纯镁产品，不参与皮质醇竞争</td><td class="num">5% <span class="dim">$150/月</span></td></tr>
+</tbody></table>
+<div class="text-sm dim mt-sm anim-fadeIn" style="animation-delay:0.3s">预算分配逻辑：🥇对标竞品（防御+学习）→ 🥈跟进增长最快的（进攻）→ 🥉抢占空白赛道（差异化）</div>
+</div>
+</section>
+
+<!-- SLIDE 36 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">预算细案</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">$3,000/月 PPC 预算详细分配</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green">
+<div class="label green">🥇 VEV对标 $1,050 (35%)</div>
+<p class="text-sm mt-sm"><strong>广告类型：</strong>商品定位广告(ASIN Targeting)<br><strong>打法：</strong>吃掉VEV的"低价"流量词<br><strong>关键指标：</strong>追踪VEV的价格变动</p>
+<div style="margin-top:var(--space-sm);background:rgba(46,155,111,0.1);padding:8px 12px;border-radius:6px;font-size:12px;color:var(--accent-green)">防御+学习型投放</div>
+</div>
+<div class="card card-blue">
+<div class="label blue">🥈 Loroc'e跟踪 $750 (25%)</div>
+<p class="text-sm mt-sm"><strong>广告类型：</strong>关键词定位+竞品词<br><strong>打法：</strong>抢占"super cortisol reducer"<br><strong>关键指标：</strong>追踪Loroc'e的增速拐点</p>
+<div style="margin-top:var(--space-sm);background:rgba(91,141,239,0.1);padding:8px 12px;border-radius:6px;font-size:12px;color:var(--accent-blue)">进攻型投放</div>
+</div>
+<div class="card card-purple">
+<div class="label purple">🥉 液态滴剂 $600 (20%)</div>
+<p class="text-sm mt-sm"><strong>广告类型：</strong>品类词+长尾词<br><strong>打法：</strong>教育市场"液态滴剂"概念<br><strong>关键指标：</strong>搜索量趋势</p>
+<div style="margin-top:var(--space-sm);background:rgba(139,92,246,0.1);padding:8px 12px;border-radius:6px;font-size:12px;color:var(--accent-purple)">差异化教育型</div>
+</div>
+<div class="card card-gold">
+<div class="label gold">4-5 其他 $600 (20%)</div>
+<p class="text-sm mt-sm"><strong>广告类型：</strong>自动投放+品牌词防御<br><strong>打法：</strong>测试长尾词+品牌保护<br><strong>关键指标：</strong>ACOS</p>
+<div style="margin-top:var(--space-sm);background:rgba(201,169,110,0.1);padding:8px 12px;border-radius:6px;font-size:12px;color:var(--accent-gold)">测试+防御型</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 37 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">产品策略</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">BCG矩阵对产品开发的启示</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green">
+<div class="label green">🎯 建议配方方向</div>
+<div class="text-sm mt-sm" style="line-height:2">
+✅ 镁300mg（至少4种形态复合）<br>
+✅ L-Theanine 400mg（高剂量区）<br>
+✅ Ashwagandha 300mg（20:1提取）<br>
+✅ 维生素D3 50mcg（加分项）<br>
+✅ 10+草药混合物（差异化护城河）<br>
+⛔ 不要学Venture Pal的5mg Ashwa
+</div>
+</div>
+<div class="card card-blue">
+<div class="label blue">🎯 建议剂型策略</div>
+<div class="text-sm mt-sm" style="line-height:2">
+<strong>主SKU：</strong>胶囊（VEV对标）<br>
+→ 成本控制+高份数(60+)<br><br>
+<strong>差异化SKU：</strong>液态滴剂<br>
+→ 仅Vita一个对手，竞争空白<br><br>
+<strong>未来SKU：</strong>粉剂冲饮包<br>
+→ Nello路线，高溢价
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 38 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label red anim-fadeIn">风险预警</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px;color:var(--accent-red)">4个需要持续监控的风险</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-red"><div class="label red">⚠️ TikTok热度退潮</div><p class="text-sm mt-sm">整个皮质醇赛道的高增长是否只是2024年Q3 Nello引爆的TikTok脉冲？如果热度消退，品类均值分界线会下移。</p></div>
+<div class="card card-red"><div class="label red">⚠️ VEV价格战持续</div><p class="text-sm mt-sm">VEV $14.2低价可能亏损获客。如果它涨价，市场格局会变。如果它继续低价，新进入者很难盈利。</p></div>
+<div class="card card-red"><div class="label red">⚠️ Loroc'e 一家独大</div><p class="text-sm mt-sm">Loroc'e有3个ASIN矩阵覆盖。如果B0DY成功取代UltaCalm，Loroc'e可能垄断粉剂饮料赛道。</p></div>
+<div class="card card-red"><div class="label red">⚠️ 亚马逊政策风险</div><p class="text-sm mt-sm">补剂品类标签监管趋严。如果亚马逊重新定义"Cortisol Support"标签，整个品类的搜索流量池可能被重塑。</p></div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 39 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">第08章</div>
+<div class="gradient-text anim-slideUp" style="font-size:120px;font-weight:700;font-family:var(--font-display);line-height:1;margin-bottom:var(--space-md)">08</div>
+<h1 class="anim-slideUp" style="animation-delay:0.1s;max-width:700px">总结与下一步</h1>
+<p class="text-lg dim anim-slideUp" style="animation-delay:0.2s;max-width:500px;margin-top:var(--space-sm)">核心结论 · 行动清单 · 数据附录。</p>
+</div>
+</section>
+
+<!-- SLIDE 40 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label gold anim-fadeIn">核心结论</div>
+<h2 class="gradient-text anim-slideUp mb-lg" style="font-size:36px;max-width:700px">5个改变决策的 BCG 洞察</h2>
+<div class="anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green mb-sm"><div class="label green">1</div><div class="text-lg mt-sm" style="color:var(--accent-green)">品类之王是假的。</div><div class="text-sm">GOBIOTIX $86K/月排第一，但它是纯镁产品。真正的王者是VEV。</div></div>
+<div class="card card-blue mb-sm"><div class="label blue">2</div><div class="text-lg mt-sm" style="color:var(--accent-blue)">Loroc'e 是最危险的对手。</div><div class="text-sm">209%增速 + 粉剂形态 + 内部SKU迭代能力。最具Nello式品牌潜力。</div></div>
+<div class="card card-purple mb-sm"><div class="label purple">3</div><div class="text-lg mt-sm" style="color:var(--accent-purple)">液态滴剂是唯一蓝海。</div><div class="text-sm">仅Vita一个玩家，400mg镁+17-in-1。新品有机会独占这个子赛道。</div></div>
+<div class="card card-gold mb-sm"><div class="label gold">4</div><div class="text-lg mt-sm" style="color:var(--accent-gold)">成分剂量 > 成分清单。</div><div class="text-sm">Venture Pal的5mg Ashwa比"不含"更差——它建立了虚假的消费者预期。</div></div>
+<div class="card card-red"><div class="label red">5</div><div class="text-lg mt-sm" style="color:var(--accent-red)">$3K预算打VEV和Loroc'e。</div><div class="text-sm">60%预算对标这2个产品，20%抢占液态滴剂空白，20%测试+防御。</div></div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 41 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label green anim-fadeIn">下一步</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px;color:var(--accent-green)">立即执行的3个行动</h2>
+<div class="anim-slideUp" style="animation-delay:0.15s">
+<div class="card card-green mb-md" style="padding:var(--space-xl)">
+<div style="font-size:48px;font-weight:700;color:var(--accent-green);font-family:var(--font-display)">01</div>
+<h3 style="color:var(--accent-green);margin-top:var(--space-sm)">确认产品配方和剂型</h3>
+<div class="text-sm mt-sm" style="line-height:1.8">□ 镁≥300mg（4形态复合）<br>□ L-Theanine 400mg<br>□ Ashwagandha 300mg (KSM-66®)<br>□ 10+草药混合物<br>□ 主SKU胶囊(60+份)，差异化SKU液态滴剂</div>
+</div>
+<div class="card card-blue mb-md" style="padding:var(--space-xl)">
+<div style="font-size:48px;font-weight:700;color:var(--accent-blue);font-family:var(--font-display)">02</div>
+<h3 style="color:var(--accent-blue);margin-top:var(--space-sm)">建立竞品监控看板</h3>
+<div class="text-sm mt-sm" style="line-height:1.8">□ 每周追踪VEV价格变动<br>□ 每月更新Loroc'e B0DY销量增速<br>□ 监控"liquid cortisol drops"搜索量趋势<br>□ 追踪品类整体月销变化</div>
+</div>
+<div class="card card-gold" style="padding:var(--space-xl)">
+<div style="font-size:48px;font-weight:700;color:var(--accent-gold);font-family:var(--font-display)">03</div>
+<h3 style="color:var(--accent-gold);margin-top:var(--space-sm)">启动PPC冷启动</h3>
+<div class="text-sm mt-sm" style="line-height:1.8">□ VEV ASIN Targeting: $1,050/月<br>□ Loroc'e 关键词: $750/月<br>□ 液态滴剂品类词: $600/月<br>□ 自动投放+品牌防御: $600/月<br>□ 首月KPI: ACOS<40%, 日均点击>50</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SLIDE 42 -->
+<section class="slide">
+<div class="slide-content">
+<div class="label dim anim-fadeIn">附录</div>
+<h2 class="anim-slideUp mb-lg" style="max-width:700px">数据来源与方法论</h2>
+<div class="grid-2 anim-slideUp" style="animation-delay:0.15s">
+<div class="card">
+<div class="label gold">数据来源</div>
+<table class="data-table"><tbody>
+<tr><td>销量数据</td><td>Cortisol相关竞品3年数据.xlsx (17ASIN×25月)</td></tr>
+<tr><td>标签数据</td><td>3年镁类目标签数据(更新)2.0.xlsx</td></tr>
+<tr><td>成分数据</td><td>macOS Vision OCR 从Amazon产品页提取</td></tr>
+<tr><td>分析基准</td><td>2026年Q1（1-3月均值）</td></tr>
+</tbody></table>
+</div>
+<div class="card">
+<div class="label gold">BCG方法论</div>
+<table class="data-table"><tbody>
+<tr><td>X轴（份额）</td><td>销售额归一化(50%) + 评论数归一化(50%)</td></tr>
+<tr><td>Y轴（增长）</td><td>Q1增速归一化(60%) + 评分归一化(40%)</td></tr>
+<tr><td>分界线</td><td>品类中位数 X=0.353 / Y=0.264</td></tr>
+<tr><td>活跃竞品</td><td>12个（剔除1个溢出者+4个死品）</td></tr>
+</tbody></table>
+</div>
+</div>
+<div class="text-sm dim mt-lg anim-fadeIn" style="animation-delay:0.3s;text-align:center">
+DeckOS v2.0 · 42页深度版 · 2026-04-30 · 数据溯源Excel: 皮质醇竞品数据溯源_BCG.xlsx
+</div>
+</div>
+</section>
+
+</div>
+
+<div class="progress-bar" id="progressBar" style="width:0%"></div>
+<div class="page-num" id="pageNum">1 / 42</div>
+<script>
+(function(){
+var slides=document.querySelectorAll('.slide'),total=slides.length,current=0;
+function show(i){
+  slides.forEach(function(s,j){s.classList.toggle('active',j===i)});
+  document.getElementById('progressBar').style.width=((i+1)/total*100)+'%';
+  document.getElementById('pageNum').textContent=(i+1)+' / '+total;
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();current=Math.min(current+1,total-1);show(current)}
+  else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();current=Math.max(current-1,0);show(current)}
+  else if(e.key==='Home'){e.preventDefault();current=0;show(current)}
+  else if(e.key==='End'){e.preventDefault();current=total-1;show(current)}
+  else if(e.key==='f'||e.key==='F'){e.preventDefault();if(document.fullscreenElement){document.exitFullscreen()}else{document.documentElement.requestFullscreen()}}
+});
+show(0);
+})();
+</script>
+</body>
+</html>

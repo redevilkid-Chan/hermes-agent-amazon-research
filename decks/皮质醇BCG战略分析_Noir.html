@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>皮质醇赛道 BCG 战略分析 — Noir</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;350;400;500;600&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #01010D; --bg-card: rgba(235,234,250,0.015);
+  --text: #EDEDF8; --text-muted: rgba(237,237,248,0.55); --text-dim: rgba(237,237,248,0.3);
+  --border: rgba(237,237,248,0.08); --border-light: rgba(237,237,248,0.04);
+  --green: #8EFFCE; --purple: #BC6FFF; --orange: #FFB270; --red: #FF6B6B;
+  --font: 'Inter', 'Noto Sans SC', sans-serif;
+}
+* {margin:0;padding:0;box-sizing:border-box}
+html {scroll-behavior:smooth}
+body {background:var(--bg);color:var(--text);font-family:var(--font);font-weight:350;line-height:1.65;font-size:15px;-webkit-font-smoothing:antialiased}
+
+/* Section */
+.section {max-width:1140px;margin:0 auto;padding:100px 48px;position:relative}
+.section-marker {font-family:var(--font);font-size:11px;font-weight:400;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:32px;display:flex;align-items:center;gap:12px}
+.section-marker::after {content:'';flex:1;height:1px;background:var(--border)}
+.section-title {font-size:36px;font-weight:400;letter-spacing:-0.02em;margin-bottom:8px}
+.section-sub {font-size:15px;color:var(--text-muted);font-weight:350;margin-bottom:48px;max-width:600px}
+
+/* Hero */
+.hero {max-width:1140px;margin:0 auto;padding:120px 48px 80px}
+.hero-badge {font-size:11px;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:24px}
+.hero h1 {font-size:56px;font-weight:400;letter-spacing:-0.03em;line-height:1.15;margin-bottom:16px}
+.hero h1 span {color:var(--green)}
+.hero .subtitle {font-size:17px;color:var(--text-muted);font-weight:350;max-width:560px;margin-bottom:48px}
+
+/* KPI Cards */
+.kpi-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-bottom:48px}
+.kpi-card {background:var(--bg);padding:32px 28px}
+.kpi-card .kpi-val {font-size:48px;font-weight:350;letter-spacing:-0.03em;line-height:1;margin-bottom:6px}
+.kpi-card .kpi-label {font-size:11px;color:var(--text-dim);font-weight:400;letter-spacing:0.05em;text-transform:uppercase}
+.kpi-card.g {border-left:1px solid transparent}
+.kpi-card.g .kpi-val {color:var(--green)}
+.kpi-card.p .kpi-val {color:var(--purple)}
+.kpi-card.o .kpi-val {color:var(--orange)}
+.kpi-card.r .kpi-val {color:var(--red)}
+
+/* Quadrant mini */
+.quad-mini {display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-bottom:16px}
+.quad-item {background:var(--bg);padding:20px 16px;text-align:center}
+.quad-item .q-num {font-size:32px;font-weight:400;letter-spacing:-0.02em;margin-bottom:4px}
+.quad-item .q-label {font-size:11px;color:var(--text-dim);letter-spacing:0.04em}
+.quad-item.g .q-num {color:var(--green)}
+.quad-item.p .q-num {color:var(--purple)}
+.quad-item.o .q-num {color:var(--orange)}
+.quad-item.r .q-num {color:var(--red)}
+
+/* Insight row */
+.insight-tagline {font-size:18px;font-weight:400;color:var(--text-muted);letter-spacing:-0.01em;max-width:700px;line-height:1.6}
+.insight-tagline strong {color:var(--text);font-weight:500}
+
+/* Cards */
+.cards-grid {display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border)}
+.card-item {background:var(--bg);padding:32px 28px}
+.card-item .card-head {font-size:20px;font-weight:400;letter-spacing:-0.02em;margin-bottom:12px}
+.card-item .card-body {font-size:14px;color:var(--text-muted);font-weight:350;line-height:1.7}
+
+/* Chart container */
+.chart-box {background:var(--bg-card);border:1px solid var(--border);padding:32px;margin:32px 0}
+
+/* Tables */
+.matrix-table {width:100%;border-collapse:collapse;font-size:12px}
+.matrix-table th {text-align:left;padding:10px 14px;font-weight:400;font-size:10px;color:var(--text-dim);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.matrix-table td {padding:10px 14px;border-bottom:1px solid var(--border-light);color:var(--text-muted);font-weight:350}
+.matrix-table .prod-name {color:var(--text);font-weight:400}
+.matrix-table .num {font-family:inherit;text-align:right;font-variant-numeric:tabular-nums}
+.matrix-table .mono {font-size:10px;color:var(--text-dim);letter-spacing:0.03em}
+/* Heatmap */
+.hm-h {color:var(--green);font-weight:500}
+.hm-m {color:rgba(142,255,206,0.6);font-weight:400}
+.hm-l {color:rgba(237,237,248,0.35)}
+.hm-n {color:rgba(237,237,248,0.15)}
+.hm-d {color:var(--red);font-weight:500}
+.hm-w {color:var(--orange);font-weight:400}
+
+/* ASIN Cards */
+.asin-card {background:var(--bg-card);border:1px solid var(--border);padding:28px;margin-bottom:1px}
+.asin-card .asin-head {display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.asin-card .asin-head .q-badge {font-size:10px;letter-spacing:0.06em;padding:3px 10px;border:1px solid;font-weight:400}
+.asin-card .asin-head .asin-id {font-size:10px;color:var(--text-dim);letter-spacing:0.04em}
+.asin-card .asin-title {font-size:22px;font-weight:400;letter-spacing:-0.02em;margin-bottom:16px}
+.asin-card .asin-metrics {display:flex;gap:24px;margin-bottom:16px}
+.asin-card .asin-metric .am-val {font-size:18px;font-weight:400}
+.asin-card .asin-metric .am-lbl {font-size:10px;color:var(--text-dim);letter-spacing:0.04em}
+.asin-card .asin-insight {font-size:14px;color:var(--text-muted);line-height:1.7;font-weight:350}
+
+/* Action list */
+.action-list {list-style:none;padding:0;margin-top:12px}
+.action-list li {padding:8px 0;font-size:14px;color:var(--text-muted);font-weight:350;display:flex;align-items:flex-start;gap:10px}
+.action-list li::before {content:"→";color:var(--green);flex-shrink:0}
+
+/* Summary grid */
+.summary-grid {display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.summary-item {background:var(--bg);padding:32px 28px}
+
+/* Corner dots */
+.corner {position:relative}
+.corner::before,.corner::after {content:'';position:absolute;width:4px;height:4px;background:rgba(237,237,248,0.2)}
+.corner::before {top:0;left:0}
+.corner::after {top:0;right:0}
+
+/* Nav dots */
+.nav-dots {position:fixed;bottom:32px;right:32px;z-index:1000;display:flex;flex-direction:column;gap:10px}
+.nav-dot {width:6px;height:6px;border-radius:50%;background:rgba(237,237,248,0.15);cursor:pointer;transition:all 0.2s;position:relative}
+.nav-dot:hover,.nav-dot.active {background:var(--green)}
+.nav-dot .dot-label {position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--text-muted);white-space:nowrap;opacity:0;transition:opacity 0.15s;pointer-events:none;letter-spacing:0.04em}
+.nav-dot:hover .dot-label {opacity:1}
+
+/* AHA text */
+.aha {font-size:28px;font-weight:400;letter-spacing:-0.02em;line-height:1.4;max-width:600px;margin:32px 0}
+.aha em {font-style:normal;color:var(--green)}
+
+/* Divider */
+.divider {height:1px;background:var(--border);margin:0 48px;max-width:1140px;margin-left:auto;margin-right:auto}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-badge">BCG STRATEGIC ANALYSIS — 2026.05</div>
+  <h1>皮质醇补充剂赛道<br><span>BCG 四象限战略矩阵</span></h1>
+  <p class="subtitle">基于 1,743 条真实评论 · 10 款竞品 · 评论增速双维度分析<br>合伙人/团队战略对齐 · 内部 Wiki</p>
+  
+  <div class="kpi-grid">
+    <div class="kpi-card g"><div class="kpi-val">10</div><div class="kpi-label">竞品覆盖</div></div>
+    <div class="kpi-card p"><div class="kpi-val">1,743</div><div class="kpi-label">评论总量</div></div>
+    <div class="kpi-card o"><div class="kpi-val">3</div><div class="kpi-label">⭐ 明星产品</div></div>
+    <div class="kpi-card r"><div class="kpi-val">4.24</div><div class="kpi-label">品类均分</div></div>
+  </div>
+  
+  <div class="quad-mini">
+    <div class="quad-item g"><div class="q-num">3</div><div class="q-label">⭐ STAR</div></div>
+    <div class="quad-item p"><div class="q-num">2</div><div class="q-label">💰 CASH COW</div></div>
+    <div class="quad-item o"><div class="q-num">2</div><div class="q-label">❓ Q-MARK</div></div>
+    <div class="quad-item r"><div class="q-num">3</div><div class="q-label">🐕 DOG</div></div>
+  </div>
+  
+  <p class="insight-tagline">VEV + KSM-66 双寡头占据 <strong>40.3%</strong> 评论量；Cortisol Detox Mgr 是 <strong>伪装现金牛</strong>（25% 差评率）；<strong>新品仍有切入空间</strong></p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== [01/08] BCG MATRIX ===== -->
+<section class="section" id="s1">
+  <div class="section-marker">[ 01 / 08 ]&nbsp;&nbsp;BCG MATRIX</div>
+  <h2 class="section-title">BCG 四象限矩阵</h2>
+  <p class="section-sub">评论增长率 × 评论总量占比 · 中位数分割 · 气泡大小 = 评论数量</p>
+  <div class="chart-box"><svg viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="960" height="500" fill="#01010D" rx="0"/>
+  <!-- Quadrant bg hints at 2% opacity -->
+  <rect x="423" y="45" width="417" height="357" fill="rgba(142,255,206,0.02)" rx="0"/>
+  <rect x="80" y="45" width="343" height="357" fill="rgba(255,178,112,0.02)" rx="0"/>
+  <rect x="423" y="402" width="417" height="33" fill="rgba(188,111,255,0.02)" rx="0"/>
+  <rect x="80" y="402" width="343" height="33" fill="rgba(255,107,107,0.02)" rx="0"/>
+  <!-- Glow grid -->
+  <line x1="250" y1="45" x2="250" y2="435" stroke="rgba(237,237,248,0.04)" stroke-width="0.5"/>
+  <line x1="439" y1="45" x2="439" y2="435" stroke="rgba(237,237,248,0.04)" stroke-width="0.5"/>
+  <line x1="628" y1="45" x2="628" y2="435" stroke="rgba(237,237,248,0.04)" stroke-width="0.5"/>
+  <line x1="817" y1="45" x2="817" y2="435" stroke="rgba(237,237,248,0.04)" stroke-width="0.5"/>
+  <!-- Axis lines -->
+  <line x1="80" y1="435" x2="840" y2="435" stroke="rgba(237,237,248,0.08)" stroke-width="1"/>
+  <line x1="80" y1="45" x2="80" y2="435" stroke="rgba(237,237,248,0.08)" stroke-width="1"/>
+  <!-- Median lines (dashed thin) -->
+  <line x1="423" y1="45" x2="423" y2="435" stroke="rgba(237,237,248,0.12)" stroke-width="0.5" stroke-dasharray="4,8"/>
+  <line x1="80" y1="402" x2="840" y2="402" stroke="rgba(237,237,248,0.12)" stroke-width="0.5" stroke-dasharray="4,8"/>
+  <!-- Quadrant labels -->
+  <text x="438" y="390" fill="rgba(237,237,248,0.35)" font-size="10" font-family="Inter, sans-serif" font-weight="300" letter-spacing="0.05em">STAR</text>
+  <text x="828" y="390" text-anchor="end" fill="rgba(237,237,248,0.35)" font-size="10" font-family="Inter, sans-serif" font-weight="300" letter-spacing="0.05em">CASH COW</text>
+  <text x="438" y="455" fill="rgba(237,237,248,0.35)" font-size="10" font-family="Inter, sans-serif" font-weight="300" letter-spacing="0.05em">QUESTION MARK</text>
+  <text x="828" y="455" text-anchor="end" fill="rgba(237,237,248,0.35)" font-size="10" font-family="Inter, sans-serif" font-weight="300" letter-spacing="0.05em">DOG</text>
+  <!-- Axis labels -->
+  <text x="460" y="28" text-anchor="middle" fill="rgba(237,237,248,0.45)" font-size="11" font-family="Inter, sans-serif" font-weight="300" letter-spacing="0.04em">评论增长率 → (中位 200%)</text>
+  <text x="22" y="245" text-anchor="middle" fill="rgba(237,237,248,0.45)" font-size="11" font-family="Inter, sans-serif" font-weight="300" letter-spacing="0.04em" transform="rotate(-90,22,245)">← 评论总量占比 (中位 9.6%)</text>
+  <!-- Dots with glow -->
+  <circle cx="839.6" cy="346.2" r="40" fill="#8EFFCE" fill-opacity="0.12"/>
+  <circle cx="839.6" cy="346.2" r="36" fill="none" stroke="#8EFFCE" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="839.6" cy="346.2" r="3" fill="#8EFFCE"/>
+  <text x="839.6" y="300.3" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">VEV DeepCalm 15-in-1</text>
+  <text x="839.6" y="400.1" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">359评 · 4.5★</text>
+  <circle cx="805.6" cy="372.7" r="38" fill="#8EFFCE" fill-opacity="0.12"/>
+  <circle cx="805.6" cy="372.7" r="34" fill="none" stroke="#8EFFCE" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="805.6" cy="372.7" r="3" fill="#8EFFCE"/>
+  <text x="805.6" y="328.4" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">10-IN-1 Cortisol KSM</text>
+  <text x="805.6" y="425.0" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">343评 · 4.5★</text>
+  <circle cx="439.0" cy="356.0" r="21" fill="#8EFFCE" fill-opacity="0.12"/>
+  <circle cx="439.0" cy="356.0" r="17" fill="none" stroke="#8EFFCE" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="439.0" cy="356.0" r="3" fill="#8EFFCE"/>
+  <text x="439.0" y="328.6" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">Vita PLynxera Liquid</text>
+  <text x="439.0" y="391.4" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">174评 · 3.97★</text>
+  <circle cx="140.5" cy="50.0" r="18" fill="#FFB270" fill-opacity="0.12"/>
+  <circle cx="140.5" cy="50.0" r="14" fill="none" stroke="#FFB270" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="140.5" cy="50.0" r="3" fill="#FFB270"/>
+  <text x="140.5" y="26.0" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">Venture Pal Calm Dri</text>
+  <text x="140.5" y="82.0" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">37评 · 4.32★</text>
+  <circle cx="80.0" cy="391.0" r="18" fill="#FFB270" fill-opacity="0.12"/>
+  <circle cx="80.0" cy="391.0" r="14" fill="none" stroke="#FFB270" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="80.0" cy="391.0" r="3" fill="#FFB270"/>
+  <text x="80.0" y="367.0" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">GOBIOTIX Mg Powder</text>
+  <text x="80.0" y="423.0" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">8评 · 4.62★</text>
+  <circle cx="688.5" cy="419.1" r="33" fill="#BC6FFF" fill-opacity="0.12"/>
+  <circle cx="688.5" cy="419.1" r="29" fill="none" stroke="#BC6FFF" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="688.5" cy="419.1" r="3" fill="#BC6FFF"/>
+  <text x="688.5" y="380.1" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">Cortisol Calm Detox </text>
+  <text x="688.5" y="466.1" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">290评 · 3.62★</text>
+  <circle cx="522.2" cy="412.3" r="25" fill="#BC6FFF" fill-opacity="0.12"/>
+  <circle cx="522.2" cy="412.3" r="21" fill="none" stroke="#BC6FFF" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="522.2" cy="412.3" r="3" fill="#BC6FFF"/>
+  <text x="522.2" y="381.0" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">UltraCalm Cortisol D</text>
+  <text x="522.2" y="451.6" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">213评 · 4.34★</text>
+  <circle cx="408.8" cy="412.3" r="20" fill="#FF6B6B" fill-opacity="0.12"/>
+  <circle cx="408.8" cy="412.3" r="16" fill="none" stroke="#FF6B6B" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="408.8" cy="412.3" r="3" fill="#FF6B6B"/>
+  <text x="408.8" y="386.3" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">Loroc'e UltraCalm Dr</text>
+  <text x="408.8" y="446.3" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">160评 · 4.09★</text>
+  <circle cx="276.5" cy="430.0" r="18" fill="#FF6B6B" fill-opacity="0.12"/>
+  <circle cx="276.5" cy="430.0" r="14" fill="none" stroke="#FF6B6B" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="276.5" cy="430.0" r="3" fill="#FF6B6B"/>
+  <text x="276.5" y="406.0" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">Triple Sleep Mg Thre</text>
+  <text x="276.5" y="462.0" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">99评 · 4.64★</text>
+  <circle cx="189.6" cy="412.3" r="18" fill="#FF6B6B" fill-opacity="0.12"/>
+  <circle cx="189.6" cy="412.3" r="14" fill="none" stroke="#FF6B6B" stroke-width="1.5" stroke-opacity="0.8"/>
+  <circle cx="189.6" cy="412.3" r="3" fill="#FF6B6B"/>
+  <text x="189.6" y="388.3" text-anchor="middle" fill="#EDEDF8" font-size="10" font-family="Inter, sans-serif" font-weight="350" letter-spacing="0.02em">Liquid Anti Stress D</text>
+  <text x="189.6" y="444.3" text-anchor="middle" fill="rgba(237,237,248,0.5)" font-size="9" font-family="Inter, sans-serif" font-weight="300">60评 · 4.13★</text>
+  <!-- Corner dots -->
+  <circle cx="80" cy="45" r="1.5" fill="rgba(237,237,248,0.3)"/>
+  <circle cx="840" cy="45" r="1.5" fill="rgba(237,237,248,0.3)"/>
+  <circle cx="80" cy="435" r="1.5" fill="rgba(237,237,248,0.3)"/>
+  <circle cx="840" cy="435" r="1.5" fill="rgba(237,237,248,0.3)"/>
+</svg></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== [02/08] ASIN OVERVIEW ===== -->
+<section class="section" id="s2">
+  <div class="section-marker">[ 02 / 08 ]&nbsp;&nbsp;ASIN OVERVIEW</div>
+  <h2 class="section-title">ASIN 总览</h2>
+  <p class="section-sub">10 款竞品基础数据一览</p>
+  <div class="chart-box">
+    <table class="matrix-table"><thead><tr><th>ASIN</th><th>产品</th><th>评论</th><th>评分</th><th>4-5★</th><th>1-2★</th><th>象限</th></tr></thead><tbody>
+<tr><td class="mono">B0DFQ6SQ88</td><td class="prod-name">VEV DeepCalm 15-in-1</td><td class="num">359</td><td class="num">4.50</td><td class="num" style="color:#8EFFCE">88.9%</td><td class="num" style="color:var(--red)">8.4%</td><td style="color:#8EFFCE;font-size:10px;letter-spacing:0.04em">STAR</td></tr><tr><td class="mono">B0DGXFYQ3F</td><td class="prod-name">10-IN-1 Cortisol KSM-66</td><td class="num">343</td><td class="num">4.50</td><td class="num" style="color:#8EFFCE">86.3%</td><td class="num" style="color:var(--red)">10.2%</td><td style="color:#8EFFCE;font-size:10px;letter-spacing:0.04em">STAR</td></tr><tr><td class="mono">B0DDHSQTLM</td><td class="prod-name">Vita PLynxera Liquid Drops</td><td class="num">174</td><td class="num">3.97</td><td class="num" style="color:#8EFFCE">73.6%</td><td class="num" style="color:var(--red)">20.1%</td><td style="color:#8EFFCE;font-size:10px;letter-spacing:0.04em">STAR</td></tr><tr><td class="mono">B0DGPZ3QST</td><td class="prod-name">Venture Pal Calm Drink</td><td class="num">37</td><td class="num">4.32</td><td class="num" style="color:#FFB270">78.4%</td><td class="num" style="color:var(--red)">5.4%</td><td style="color:#FFB270;font-size:10px;letter-spacing:0.04em">Q-MARK</td></tr><tr><td class="mono">B08W1MQJXC</td><td class="prod-name">GOBIOTIX Mg Powder</td><td class="num">8</td><td class="num">4.62</td><td class="num" style="color:#FFB270">87.5%</td><td class="num" style="color:var(--red)">0.0%</td><td style="color:#FFB270;font-size:10px;letter-spacing:0.04em">Q-MARK</td></tr><tr><td class="mono">B0CX5M896R</td><td class="prod-name">Cortisol Calm Detox Manage</td><td class="num">290</td><td class="num">3.62</td><td class="num" style="color:#BC6FFF">64.8%</td><td class="num" style="color:var(--red)">25.2%</td><td style="color:#BC6FFF;font-size:10px;letter-spacing:0.04em">CASH COW</td></tr><tr><td class="mono">B0FDPV215R</td><td class="prod-name">UltraCalm Cortisol Drink</td><td class="num">213</td><td class="num">4.34</td><td class="num" style="color:#BC6FFF">82.6%</td><td class="num" style="color:var(--red)">15.5%</td><td style="color:#BC6FFF;font-size:10px;letter-spacing:0.04em">CASH COW</td></tr><tr><td class="mono">B0DYXJ4JJ7</td><td class="prod-name">Loroc'e UltraCalm Drink</td><td class="num">160</td><td class="num">4.09</td><td class="num" style="color:#FF6B6B">74.4%</td><td class="num" style="color:var(--red)">19.4%</td><td style="color:#FF6B6B;font-size:10px;letter-spacing:0.04em">DOG</td></tr><tr><td class="mono">B0DF7T32D5</td><td class="prod-name">Triple Sleep Mg Threonate</td><td class="num">99</td><td class="num">4.64</td><td class="num" style="color:#FF6B6B">92.9%</td><td class="num" style="color:var(--red)">7.1%</td><td style="color:#FF6B6B;font-size:10px;letter-spacing:0.04em">DOG</td></tr><tr><td class="mono">B0F9WTXGPR</td><td class="prod-name">Liquid Anti Stress Drink</td><td class="num">60</td><td class="num">4.13</td><td class="num" style="color:#FF6B6B">76.7%</td><td class="num" style="color:var(--red)">18.3%</td><td style="color:#FF6B6B;font-size:10px;letter-spacing:0.04em">DOG</td></tr></tbody></table></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== [03/08] PRAISE ===== -->
+<section class="section" id="s3">
+  <div class="section-marker">[ 03 / 08 ]&nbsp;&nbsp;PRAISE PROFILE</div>
+  <h2 class="section-title">好评画像</h2>
+  <p class="section-sub">用户为什么喜欢这些产品？睡眠改善是压倒性第一需求</p>
+  <div class="chart-box"><table class="matrix-table"><thead><tr><th>产品</th><th>睡眠改善</th><th>放松减压</th><th>口味好</th><th>精神能量</th><th>情绪改善</th><th>方便使用</th></tr></thead><tbody><tr><td class="prod-name">GOBIOTIX Mg Powder</td><td class="hm-h">57.1%</td><td class="hm-h">57.1%</td><td class="hm-h">42.9%</td><td class="hm-n">14.3%</td><td class="hm-n">14.3%</td><td class="hm-n">14.3%</td></tr><tr><td class="prod-name">Cortisol Calm Detox Mg</td><td class="hm-m">26.1%</td><td class="hm-l">16.5%</td><td class="hm-n">0.5%</td><td class="hm-n">14.4%</td><td class="hm-n">12.8%</td><td class="hm-n">13.8%</td></tr><tr><td class="prod-name">Vita PLynxera Liquid</td><td class="hm-m">32.0%</td><td class="hm-n">12.5%</td><td class="hm-n">4.7%</td><td class="hm-n">14.1%</td><td class="hm-n">10.2%</td><td class="hm-l">16.4%</td></tr><tr><td class="prod-name">Triple Sleep Mg</td><td class="hm-h">60.9%</td><td class="hm-l">19.6%</td><td class="hm-n">14.1%</td><td class="hm-n">6.5%</td><td class="hm-n">4.3%</td><td class="hm-l">18.5%</td></tr><tr><td class="prod-name">VEV DeepCalm 15-in-1</td><td class="hm-h">42.6%</td><td class="hm-l">22.3%</td><td class="hm-n">0.3%</td><td class="hm-n">7.8%</td><td class="hm-n">5.3%</td><td class="hm-n">14.1%</td></tr></tbody></table></div>
+  <div class="chart-box" style="margin-top:1px"><table class="matrix-table"><thead><tr><th>产品</th><th>睡眠改善</th><th>放松减压</th><th>口味好</th><th>精神能量</th><th>情绪改善</th><th>方便使用</th></tr></thead><tbody><tr><td class="prod-name">Venture Pal Calm Drink</td><td class="hm-n">6.9%</td><td class="hm-n">13.8%</td><td class="hm-n">3.4%</td><td class="hm-n">3.4%</td><td class="hm-n">3.4%</td><td class="hm-n">0.0%</td></tr><tr><td class="prod-name">10-IN-1 Cortisol KSM-6</td><td class="hm-m">35.5%</td><td class="hm-m">31.8%</td><td class="hm-n">0.3%</td><td class="hm-l">22.6%</td><td class="hm-l">17.6%</td><td class="hm-m">28.4%</td></tr><tr><td class="prod-name">Loroc'e UltraCalm Drin</td><td class="hm-l">19.3%</td><td class="hm-m">39.5%</td><td class="hm-l">18.5%</td><td class="hm-l">16.8%</td><td class="hm-n">5.9%</td><td class="hm-m">34.5%</td></tr><tr><td class="prod-name">Liquid Anti Stress Dri</td><td class="hm-l">19.6%</td><td class="hm-l">17.4%</td><td class="hm-n">8.7%</td><td class="hm-n">10.9%</td><td class="hm-n">6.5%</td><td class="hm-n">8.7%</td></tr><tr><td class="prod-name">UltraCalm Cortisol Dri</td><td class="hm-h">43.2%</td><td class="hm-h">58.0%</td><td class="hm-l">22.7%</td><td class="hm-n">13.1%</td><td class="hm-n">11.9%</td><td class="hm-m">26.1%</td></tr></tbody></table></div>
+  <div class="cards-grid" style="margin-top:32px">
+    <div class="card-item"><div class="card-head" style="color:var(--green)">睡眠是第一战场</div><div class="card-body">Triple Sleep 60.9% · GOBIOTIX 57.1% · VEV 42.6%。消费者把「皮质醇管理」翻译为「帮助我睡好觉」。</div></div>
+    <div class="card-item"><div class="card-head" style="color:var(--orange)">口味是差异化武器</div><div class="card-body">UltraCalm 22.7% · Loroc'e 18.5% 口味好评率显著高于竞品。不是配方问题，是工艺问题。</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== [04/08] PAIN ===== -->
+<section class="section" id="s4">
+  <div class="section-marker">[ 04 / 08 ]&nbsp;&nbsp;PAIN PROFILE</div>
+  <h2 class="section-title">痛点画像</h2>
+  <p class="section-sub">56 次「无效」· 45 次「副作用」· 40 次「口味差」— 用户的抱怨告诉我们什么？</p>
+  <div class="chart-box"><table class="matrix-table"><thead><tr><th>产品</th><th>无效/没效果</th><th>副作用</th><th>口味差</th><th>溶解问题</th><th>包装品质</th><th>性价比</th></tr></thead><tbody><tr><td class="prod-name">GOBIOTIX Mg Powder</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td></tr><tr><td class="prod-name">Cortisol Calm Detox Mg</td><td class="hm-d">24</td><td class="hm-d">20</td><td class="hm-l">3</td><td class="hm-l">2</td><td class="hm-n">1</td><td class="hm-w">6</td></tr><tr><td class="prod-name">Vita PLynxera Liquid</td><td class="hm-d">11</td><td class="hm-l">4</td><td class="hm-w">6</td><td class="hm-n">0</td><td class="hm-l">3</td><td class="hm-w">7</td></tr><tr><td class="prod-name">Triple Sleep Mg</td><td class="hm-n">1</td><td class="hm-n">1</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td></tr><tr><td class="prod-name">VEV DeepCalm 15-in-1</td><td class="hm-l">4</td><td class="hm-w">9</td><td class="hm-n">0</td><td class="hm-n">1</td><td class="hm-n">0</td><td class="hm-l">3</td></tr></tbody></table></div>
+  <div class="chart-box" style="margin-top:1px"><table class="matrix-table"><thead><tr><th>产品</th><th>无效/没效果</th><th>副作用</th><th>口味差</th><th>溶解问题</th><th>包装品质</th><th>性价比</th></tr></thead><tbody><tr><td class="prod-name">Venture Pal Calm Drink</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td></tr><tr><td class="prod-name">10-IN-1 Cortisol KSM-6</td><td class="hm-d">19</td><td class="hm-w">5</td><td class="hm-n">1</td><td class="hm-n">0</td><td class="hm-l">2</td><td class="hm-d">10</td></tr><tr><td class="prod-name">Loroc'e UltraCalm Drin</td><td class="hm-w">8</td><td class="hm-l">2</td><td class="hm-d">12</td><td class="hm-l">3</td><td class="hm-n">1</td><td class="hm-w">7</td></tr><tr><td class="prod-name">Liquid Anti Stress Dri</td><td class="hm-l">3</td><td class="hm-n">0</td><td class="hm-l">2</td><td class="hm-n">0</td><td class="hm-n">0</td><td class="hm-n">0</td></tr><tr><td class="prod-name">UltraCalm Cortisol Dri</td><td class="hm-w">5</td><td class="hm-l">4</td><td class="hm-d">16</td><td class="hm-d">12</td><td class="hm-n">0</td><td class="hm-w">9</td></tr></tbody></table></div>
+  <div class="aha" style="margin-top:32px">"无效"不是成分问题<br>是<em>信任问题</em></div>
+  <p style="color:var(--text-muted);margin-bottom:8px">56 次「无效」投诉中，绝大多数来自 Ashwagandha 相关产品。约 10-15% 用户对 Ashwagandha 呈反向反应。</p>
+  <p style="color:var(--green);font-weight:400;font-size:16px">→ 产品机会：无 Ashwagandha + 临床背书 的皮质醇管理方案</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== [05/08] ASIN DEEP DIVE ===== -->
+<section class="section" id="s5">
+  <div class="section-marker">[ 05 / 08 ]&nbsp;&nbsp;ASIN DEEP DIVE</div>
+  <h2 class="section-title">逐 ASIN 深度分析</h2>
+  <p class="section-sub">每个竞品的战略定位与风险</p>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#8EFFCE;border-color:#8EFFCE">⭐ STAR</span>
+      <span class="asin-id">B0DFQ6SQ88</span>
+    </div>
+    <div class="asin-title">VEV DeepCalm 15-in-1</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">359</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">4.5</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#8EFFCE">89%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">8%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">品类领导者。88.9%好评+720%增长。15合1配方是核心卖点。风险：9次副作用(Ashwagandha)。策略：增加「无Ashwagandha版本」。</div>
+  </div>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#8EFFCE;border-color:#8EFFCE">⭐ STAR</span>
+      <span class="asin-id">B0DGXFYQ3F</span>
+    </div>
+    <div class="asin-title">10-IN-1 Cortisol KSM-66</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">343</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">4.5</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#8EFFCE">86%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">10%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">KSM-66标准化建立信任壁垒。19次「无效」投诉是软肋。精神/能量22.6%是差异标签。策略：增临床引用+强调标准化。</div>
+  </div>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#8EFFCE;border-color:#8EFFCE">⭐ STAR</span>
+      <span class="asin-id">B0DDHSQTLM</span>
+    </div>
+    <div class="asin-title">Vita PLynxera Liquid Drops</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">174</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">4.0</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#8EFFCE">74%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">20%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">增速+629%但评分3.97。液体滴剂差异化优势。11次「无效」+7次「太贵」。策略：降本提效或升级高端定位。</div>
+  </div>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#FFB270;border-color:#FFB270">❓ Q-MARK</span>
+      <span class="asin-id">B0DGPZ3QST</span>
+    </div>
+    <div class="asin-title">Venture Pal Calm Drink</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">37</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">4.3</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#FFB270">78%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">5%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">+3500%增长异常。37条评论基数极小。差评率仅5.4%产品本身不错。策略：观察2-3月确认趋势。</div>
+  </div>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#FFB270;border-color:#FFB270">❓ Q-MARK</span>
+      <span class="asin-id">B08W1MQJXC</span>
+    </div>
+    <div class="asin-title">GOBIOTIX Mg Powder</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">8</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">4.6</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#FFB270">88%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">0%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">品类OG。4.62高分+0%差评率。57.1%睡眠改善好评最高。策略：不是竞品，是标杆学习对象。</div>
+  </div>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#BC6FFF;border-color:#BC6FFF">💰 CASH COW</span>
+      <span class="asin-id">B0CX5M896R</span>
+    </div>
+    <div class="asin-title">Cortisol Calm Detox Manager</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">290</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">3.6</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#BC6FFF">65%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">25%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">⚠品类毒药。25.2%差评率。24次「无效」+20次副作用。增速+36%被市场抛弃。策略：反面教材，不要学。</div>
+  </div>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#BC6FFF;border-color:#BC6FFF">💰 CASH COW</span>
+      <span class="asin-id">B0FDPV215R</span>
+    </div>
+    <div class="asin-title">UltraCalm Cortisol Drink</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">213</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">4.3</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#BC6FFF">83%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">16%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">口味好评22.7%品类最高+放松减压58%。但12次溶解问题。策略：研究口味配方，避免溶解性坑。</div>
+  </div>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#FF6B6B;border-color:#FF6B6B">🐕 DOG</span>
+      <span class="asin-id">B0DYXJ4JJ7</span>
+    </div>
+    <div class="asin-title">Loroc'e UltraCalm Drink</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">160</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">4.1</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#FF6B6B">74%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">19%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">Nello模仿者困境。13条Nello提及12条差评。口味差12次投诉。策略：口味必须是第一优先级。</div>
+  </div>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#FF6B6B;border-color:#FF6B6B">🐕 DOG</span>
+      <span class="asin-id">B0DF7T32D5</span>
+    </div>
+    <div class="asin-title">Triple Sleep Mg Threonate</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">99</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">4.6</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#FF6B6B">93%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">7%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">品类最高分4.64。92.9%好评率。睡眠改善60.9%最强。增速-66.2%。策略：研究配方逻辑，不跟这个细分。</div>
+  </div>
+  <div class="asin-card">
+    <div class="asin-head">
+      <span class="q-badge" style="color:#FF6B6B;border-color:#FF6B6B">🐕 DOG</span>
+      <span class="asin-id">B0F9WTXGPR</span>
+    </div>
+    <div class="asin-title">Liquid Anti Stress Drink</div>
+    <div class="asin-metrics">
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">60</div><div class="am-lbl">评论数</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--text)">4.1</div><div class="am-lbl">均分</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:#FF6B6B">77%</div><div class="am-lbl">4-5★</div></div>
+      <div class="asin-metric"><div class="am-val" style="color:var(--red)">18%</div><div class="am-lbl">1-2★</div></div>
+    </div>
+    <div class="asin-insight">定位模糊。无突出优势维度。60条评论低增长。策略：不需要特别关注。</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== [06/08] CROSS-ASIN INSIGHTS ===== -->
+<section class="section" id="s6">
+  <div class="section-marker">[ 06 / 08 ]&nbsp;&nbsp;STRATEGIC INSIGHTS</div>
+  <h2 class="section-title">跨 ASIN 战略洞察</h2>
+  <p class="section-sub">从个体竞品到品类全局</p>
+  
+  <div class="cards-grid" style="margin-bottom:1px">
+    <div class="card-item">
+      <div class="card-head" style="color:var(--green)">洞察 1：睡眠是第一战场</div>
+      <div class="card-body">50% 好评提到睡眠。定位「助眠」比「降皮质醇」转化率高 3 倍。产品名和 Listing 关键词必须以睡眠为切入点。</div>
+      <div style="display:flex;gap:16px;margin-top:16px">
+        <div><span style="color:var(--green);font-size:20px;font-weight:400">60.9%</span><br><span style="font-size:10px;color:var(--text-dim)">Triple Sleep</span></div>
+        <div><span style="color:var(--green);font-size:20px;font-weight:400">57.1%</span><br><span style="font-size:10px;color:var(--text-dim)">GOBIOTIX</span></div>
+        <div><span style="color:var(--green);font-size:20px;font-weight:400">43.2%</span><br><span style="font-size:10px;color:var(--text-dim)">UltraCalm</span></div>
+      </div>
+    </div>
+    <div class="card-item">
+      <div class="card-head" style="color:var(--red)">洞察 2：Ashwagandha 悖论</div>
+      <div class="card-body">约 10-15% 用户呈反向反应（焦虑加剧）。目前没有任何竞品标注「不含 Ashwagandha」— 这是未占领的差异化定位。</div>
+      <p style="margin-top:16px;color:var(--green);font-size:14px;font-weight:400">→ 同时推出含/不含两个版本</p>
+    </div>
+  </div>
+  <div class="cards-grid" style="margin-top:1px">
+    <div class="card-item">
+      <div class="card-head" style="color:var(--purple)">洞察 3：竞争格局地图</div>
+      <div class="card-body"><span style="color:var(--green)">粉末赛道</span> — VEV · KSM-66 · UltraCalm，增长强劲但溶解性+口味是核心痛点<br><span style="color:var(--purple)">液体赛道</span> — Vita PLynxera · Loroc'e，差异化剂型，方便使用是天然优势<br><span style="color:var(--red)">红海陷阱</span> — Detox Mgr · 低价低质，不要进入这个价格带</div>
+    </div>
+    <div class="card-item">
+      <div class="card-head" style="color:var(--orange)">洞察 4：VC 叙事</div>
+      <div class="card-body">品类 CR3 = 50.3%（VEV+KSM-66+Detox Mgr），但 Detox Mgr 正在崩盘。如果新品能吃掉 Detox Mgr 的 16.6% 份额并维持 4.3+ 评分，18 个月内可进入前三。</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== [07/08] PRODUCT DEV ===== -->
+<section class="section" id="s7">
+  <div class="section-marker">[ 07 / 08 ]&nbsp;&nbsp;PRODUCT STRATEGY</div>
+  <h2 class="section-title">产品开发建议</h2>
+  <p class="section-sub">从洞察到行动</p>
+  
+  <div class="cards-grid" style="margin-bottom:1px">
+    <div class="card-item"><div class="card-head" style="color:var(--green)">Phase 1 · 核心配方</div><div class="card-body">0-3 个月</div><ul class="action-list">
+      <li>核心成分：Mg Glycinate + L-Theanine + 可选 Ashwagandha</li>
+      <li>剂型：粉末（主）+ 液体（差异化）双线</li>
+      <li>口味：水果风味，参考 UltraCalm 22.7% 路径</li>
+      <li>溶解度：必须优于 UltraCalm — 粉末品类最大摩擦点</li>
+    </ul></div>
+    <div class="card-item"><div class="card-head" style="color:var(--purple)">Phase 2 · 差异化定位</div><div class="card-body">3-6 个月</div><ul class="action-list">
+      <li>SKU A：「睡眠优化版」— 侧重 Mg + L-Theanine</li>
+      <li>SKU B：「日间平衡版」— 侧重适应原 + 能量</li>
+      <li>标签：「No Ashwagandha Option」温和版</li>
+    </ul></div>
+  </div>
+  <div class="cards-grid" style="margin-top:1px">
+    <div class="card-item"><div class="card-head" style="color:var(--orange)">Phase 3 · 信任建设</div><div class="card-body">持续</div><ul class="action-list">
+      <li>A+ 页面：临床数据 + 第三方检测 + 成分溯源</li>
+      <li>评论策略：Early Reviewer + Vine 快速建立基础</li>
+    </ul></div>
+    <div class="card-item"><div class="card-head" style="color:var(--red)">配方策略矩阵</div><div class="card-body">
+      <span style="color:var(--green)">必须：Mg Glycinate, L-Theanine</span><br>
+      <span style="color:var(--orange)">有条件：Ashwagandha（独立SKU）</span><br>
+      <span style="color:var(--text-muted)">可选：GABA, Lemon Balm</span><br>
+      <span style="color:var(--text-dim)">不推荐：Mg Threonate 单独使用</span>
+    </div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== [08/08] APPENDIX ===== -->
+<section class="section" id="s8">
+  <div class="section-marker">[ 08 / 08 ]&nbsp;&nbsp;APPENDIX &amp; SUMMARY</div>
+  <h2 class="section-title">数据附录 &amp; 战略总结</h2>
+  <p class="section-sub">方法论 · 数据来源 · 可做与不可做</p>
+  
+  <div class="summary-grid" style="margin-bottom:1px">
+    <div class="summary-item">
+      <div class="card-head" style="color:var(--green)">数据来源</div>
+      <div class="card-body">
+        卖家精灵 AI 评论分析导出（2026.05.02）<br>
+        1,743 条评论 · 2022.04 – 2026.04<br>
+        BCG：X=评论份额 Y=增长率（后半/前半-1）<br>
+        中位分割：份额 9.58% · 增长 200%<br>
+        情感：星级 + 关键词混合方法
+      </div>
+    </div>
+    <div class="summary-item">
+      <div class="card-head" style="color:var(--green)">✅ 可以做</div>
+      <div class="card-body">
+        → 品类有真实需求（睡眠是刚需）<br>
+        → 明星产品尚未形成垄断<br>
+        → 差异化空间明确（无 Ashwagandha）<br>
+        → 粉末+液体双线策略可行
+      </div>
+    </div>
+  </div>
+  <div class="summary-grid" style="margin-top:1px">
+    <div class="summary-item">
+      <div class="card-head" style="color:var(--red)">⚠️ 不能做</div>
+      <div class="card-body">
+        → 不要走低价路线（Detox Mgr 陷阱）<br>
+        → 不要忽略口味和溶解性<br>
+        → 不要对标 Loroc'e（模仿失败）<br>
+        → 不要只做单一成分（萎缩市场）
+      </div>
+    </div>
+    <div class="summary-item">
+      <div class="card-head" style="color:var(--orange)">下一步行动</div>
+      <div class="card-body">
+        <span style="color:var(--green)">01</span> 确定配方方向<br>
+        <span style="color:var(--purple)">02</span> 寻找代工厂<br>
+        <span style="color:var(--orange)">03</span> 产品打样测试<br>
+        <span style="color:var(--green)">04</span> Listing 上架<br><br>
+        <span style="font-size:13px">→ 下周一前确认：是否分含/不含 Ashwagandha 两 SKU 同时启动</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NAV DOTS ===== -->
+<div class="nav-dots" id="navDots">
+  <a href="#hero" class="nav-dot active"><span class="dot-label">Dashboard</span></a>
+  <a href="#s1" class="nav-dot"><span class="dot-label">01 · BCG Matrix</span></a>
+  <a href="#s2" class="nav-dot"><span class="dot-label">02 · ASIN Overview</span></a>
+  <a href="#s3" class="nav-dot"><span class="dot-label">03 · Praise Profile</span></a>
+  <a href="#s4" class="nav-dot"><span class="dot-label">04 · Pain Profile</span></a>
+  <a href="#s5" class="nav-dot"><span class="dot-label">05 · Deep Dive</span></a>
+  <a href="#s6" class="nav-dot"><span class="dot-label">06 · Insights</span></a>
+  <a href="#s7" class="nav-dot"><span class="dot-label">07 · Product Strategy</span></a>
+  <a href="#s8" class="nav-dot"><span class="dot-label">08 · Appendix</span></a>
+</div>
+
+<script>
+(function(){
+  var dots = document.querySelectorAll('.nav-dot');
+  var sections = [];
+  dots.forEach(function(d){ var id = d.getAttribute('href').slice(1); var el = document.getElementById(id); if(el) sections.push({el:el, dot:d}); });
+  function update(){ var sy = window.scrollY + window.innerHeight/3; var active = null;
+    for(var i=sections.length-1;i>=0;i--){ if(sections[i].el.offsetTop <= sy){ active = sections[i].dot; break; } }
+    if(!active && sections.length) active = sections[0].dot;
+    dots.forEach(function(d){ d.classList.remove('active'); });
+    if(active) active.classList.add('active');
+  }
+  window.addEventListener('scroll', update, {passive:true});
+  update();
+})();
+</script>
+</body></html>
