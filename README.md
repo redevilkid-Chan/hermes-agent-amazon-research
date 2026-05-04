@@ -10,7 +10,7 @@
 
 ## 🎯 What This Is
 
-A fully autonomous, multi-Agent market research pipeline for Amazon sellers. It ingests raw category data (卖家精灵数据), runs competitive analysis, generates BCG matrices, and produces data-driven strategy recommendations — all orchestrated by Hermes Agent.
+A fully autonomous, multi-Agent market research pipeline for Amazon sellers. It ingests raw category data (sellersprite / helium 10 / jungle scout), runs competitive analysis, generates BCG matrices, and produces data-driven strategy recommendations — all orchestrated by Hermes Agent.
 
 ### Core Problem Solved
 
@@ -25,8 +25,8 @@ Amazon sellers drown in category data but lack systematic analysis frameworks. D
 │ Data Ingestion│ → │ BCG Matrix   │ → │ Strategy Gen │ → │ DeckOS Report│
 │    Agent     │    │    Agent     │    │    Agent     │    │    Agent     │
 └─────────────┘    └──────────────┘    └─────────────┘    └──────────────┘
-  卖家精灵      Stars / Cash Cows   5-Dimension        Dark / Noir / SaaS
-  卖家精灵         Question Marks      Decision Matrix    42-page slides
+  sellersprite      Stars / Cash Cows   5-Dimension        Dark / Noir / SaaS
+  sellersprite         Question Marks      Decision Matrix    42-page slides
   3-year history    P25/P50/P75         Devil's Advocate   Auto QA scoring
 ```
 
