@@ -2,14 +2,18 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1200,height=800">
-<title>DeepSeek API Usage — MiMo Proof</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DeepSeek API 消费 · MiMo 证明</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0d1117;color:#f0f6fc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:40px;width:1200px;height:800px}
+body{background:#0d1117;color:#f0f6fc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:40px;max-width:1200px;margin:0 auto}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px}
 h1{font-size:28px;margin-bottom:4px}
 h1 span{color:#58a6ff}
-.sub{color:#8b949e;font-size:14px;margin-bottom:30px}
+.sub{color:#8b949e;font-size:14px;margin-bottom:0}
+.lang-btn{background:#161b22;border:1px solid #30363d;color:#8b949e;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:all .2s;white-space:nowrap}
+.lang-btn:hover{color:#f0f6fc;border-color:#58a6ff;background:#1c2128}
+.lang-btn.active{color:#58a6ff;border-color:#58a6ff;background:#1c2128}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px}
 .card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:20px}
 .card .label{color:#8b949e;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
@@ -28,45 +32,88 @@ tr:hover{background:#1c2128}
 .bar.low{background:#8b949e}
 .footer{color:#484f58;font-size:11px;text-align:center;margin-top:20px;border-top:1px solid #21262d;padding-top:16px}
 .footer strong{color:#8b949e}
+@media (max-width:800px){body{padding:20px} .grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<h1>DeepSeek API <span>Usage Report</span></h1>
-<p class="sub">2026.4.27 – 2026.5.4 · Model: deepseek-v4-pro · API Key: Hermes + Trae-2.0</p>
+
+<div class="topbar">
+  <div>
+    <h1>DeepSeek API <span data-i18n="title">消费报告</span></h1>
+    <p class="sub" data-i18n="sub">2026.4.27 – 2026.5.4 · Model: deepseek-v4-pro · API Key: Hermes + Trae-2.0</p>
+  </div>
+  <button class="lang-btn active" id="langToggle" onclick="toggleLang()">中</button>
+</div>
 
 <div class="grid">
   <div class="card">
-    <div class="label">Total Cost</div>
+    <div class="label" data-i18n="cost">总消费</div>
     <div class="value orange">¥104.64</div>
   </div>
   <div class="card">
-    <div class="label">Avg Daily Cost</div>
+    <div class="label" data-i18n="avg">日均消费</div>
     <div class="value blue">¥13.08</div>
   </div>
   <div class="card">
-    <div class="label">Output Tokens</div>
+    <div class="label" data-i18n="output">输出 Token</div>
     <div class="value green">2.78M</div>
   </div>
   <div class="card">
-    <div class="label">Total Requests</div>
+    <div class="label" data-i18n="requests">总请求数</div>
     <div class="value blue">4,820</div>
   </div>
 </div>
 
 <table>
-  <tr><th>Date</th><th>Cost (¥)</th><th></th><th>Output Tokens</th><th>Requests</th><th>Cache Hit</th></tr>
-  <tr><td>4/27</td><td style="color:#f78166;font-weight:700">28.14</td><td><div class="bar-bg"><div class="bar high" style="width:100%"></div></div></td><td>553K</td><td>1,063</td><td>159M</td></tr>
-  <tr><td>4/28</td><td>10.12</td><td><div class="bar-bg"><div class="bar low" style="width:36%"></div></div></td><td>167K</td><td>328</td><td>52M</td></tr>
-  <tr><td>4/29</td><td>9.69</td><td><div class="bar-bg"><div class="bar low" style="width:34%"></div></div></td><td>325K</td><td>579</td><td>40M</td></tr>
-  <tr><td>4/30</td><td>11.37</td><td><div class="bar-bg"><div class="bar mid" style="width:40%"></div></div></td><td>388K</td><td>571</td><td>48M</td></tr>
-  <tr><td>5/1</td><td>11.84</td><td><div class="bar-bg"><div class="bar mid" style="width:42%"></div></div></td><td>324K</td><td>691</td><td>44M</td></tr>
-  <tr><td>5/2</td><td style="color:#f78166;font-weight:700">17.91</td><td><div class="bar-bg"><div class="bar high" style="width:64%"></div></div></td><td>626K</td><td>884</td><td>63M</td></tr>
-  <tr><td>5/3</td><td>12.84</td><td><div class="bar-bg"><div class="bar mid" style="width:46%"></div></div></td><td>289K</td><td>593</td><td>49M</td></tr>
-  <tr><td>5/4</td><td>2.73</td><td><div class="bar-bg"><div class="bar low" style="width:10%"></div></div></td><td>109K</td><td>111</td><td>3M</td></tr>
+  <thead>
+    <tr><th data-i18n="date">日期</th><th data-i18n="cost_col">消费 (¥)</th><th></th><th data-i18n="output_col">输出 Token</th><th data-i18n="req_col">请求数</th><th data-i18n="cache_col">缓存命中</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>4/27</td><td style="color:#f78166;font-weight:700">28.14</td><td><div class="bar-bg"><div class="bar high" style="width:100%"></div></div></td><td>553K</td><td>1,063</td><td>159M</td></tr>
+    <tr><td>4/28</td><td>10.12</td><td><div class="bar-bg"><div class="bar low" style="width:36%"></div></div></td><td>167K</td><td>328</td><td>52M</td></tr>
+    <tr><td>4/29</td><td>9.69</td><td><div class="bar-bg"><div class="bar low" style="width:34%"></div></div></td><td>325K</td><td>579</td><td>40M</td></tr>
+    <tr><td>4/30</td><td>11.37</td><td><div class="bar-bg"><div class="bar mid" style="width:40%"></div></div></td><td>388K</td><td>571</td><td>48M</td></tr>
+    <tr><td>5/1</td><td>11.84</td><td><div class="bar-bg"><div class="bar mid" style="width:42%"></div></div></td><td>324K</td><td>691</td><td>44M</td></tr>
+    <tr><td>5/2</td><td style="color:#f78166;font-weight:700">17.91</td><td><div class="bar-bg"><div class="bar high" style="width:64%"></div></div></td><td>626K</td><td>884</td><td>63M</td></tr>
+    <tr><td>5/3</td><td>12.84</td><td><div class="bar-bg"><div class="bar mid" style="width:46%"></div></div></td><td>289K</td><td>593</td><td>49M</td></tr>
+    <tr><td>5/4</td><td>2.73</td><td><div class="bar-bg"><div class="bar low" style="width:10%"></div></div></td><td>109K</td><td>111</td><td>3M</td></tr>
+  </tbody>
 </table>
 
 <div class="footer">
-  <strong>Avg ~602 requests/day</strong> · <strong>~458M cache hits</strong> · Peak day: 5/2 (¥17.91 / 626K output) · All data from DeepSeek official billing console
+  <span data-i18n="footer">日均 ~602 请求 · 缓存命中 ~458M · 峰值日 5/2 (¥17.91 / 626K 输出) · 数据源自 DeepSeek 官方账单</span>
 </div>
+
+<script>
+const i18n = {
+  zh: {
+    title: '消费报告', cost: '总消费', avg: '日均消费', output: '输出 Token',
+    requests: '总请求数', date: '日期', cost_col: '消费 (¥)', output_col: '输出 Token',
+    req_col: '请求数', cache_col: '缓存命中',
+    footer: '日均 ~602 请求 · 缓存命中 ~458M · 峰值日 5/2 (¥17.91 / 626K 输出) · 数据源自 DeepSeek 官方账单',
+    sub: '2026.4.27 – 2026.5.4 · 模型: deepseek-v4-pro · API Key: Hermes + Trae-2.0',
+    pageTitle: 'DeepSeek API 消费 · MiMo 证明'
+  },
+  en: {
+    title: 'Usage Report', cost: 'Total Cost', avg: 'Avg Daily Cost', output: 'Output Tokens',
+    requests: 'Total Requests', date: 'Date', cost_col: 'Cost (¥)', output_col: 'Output Tokens',
+    req_col: 'Requests', cache_col: 'Cache Hit',
+    footer: 'Avg ~602 req/day · Cache hits ~458M · Peak: 5/2 (¥17.91 / 626K out) · Sourced from DeepSeek official billing',
+    sub: '2026.4.27 – 2026.5.4 · Model: deepseek-v4-pro · API Key: Hermes + Trae-2.0',
+    pageTitle: 'DeepSeek API Usage · MiMo Proof'
+  }
+};
+
+let lang = 'zh';
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = i18n[lang][el.dataset.i18n]; });
+  document.title = i18n[lang].pageTitle;
+  document.documentElement.lang = lang;
+  const btn = document.getElementById('langToggle');
+  btn.textContent = lang === 'zh' ? '中' : 'EN';
+  btn.classList.toggle('active', lang === 'zh');
+}
+</script>
 </body>
 </html>
