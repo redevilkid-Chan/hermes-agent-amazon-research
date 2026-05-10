@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9大AgentSkills 使用指南</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0B0E1A;
+    --card: #131829;
+    --border: #1E2540;
+    --accent: #6C8AFF;
+    --accent2: #00D4AA;
+    --accent3: #FF7F56;
+    --text: #E8ECF4;
+    --muted: #6B7594;
+    --gold: #F5C842;
+  }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    overflow: hidden;
+  }
+  .deck {
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+  }
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    padding: 60px 80px;
+    background: var(--bg);
+  }
+  .slide.active { display: flex; }
+  .slide-number {
+    position: absolute;
+    bottom: 28px;
+    right: 40px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .brand {
+    position: absolute;
+    top: 28px;
+    left: 40px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .progress-bar {
+    position: absolute;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+    z-index: 10;
+  }
+
+  /* NAV */
+  .nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: rgba(11,14,26,0.92);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .nav-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .nav-btn.primary:hover { background: #5A7AEE; }
+  .page-indicator {
+    font-size: 13px;
+    color: var(--muted);
+    min-width: 80px;
+    text-align: center;
+  }
+
+  /* ===== SLIDE 1: COVER ===== */
+  .cover-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, #1A2545 0%, var(--bg) 70%);
+  }
+  .cover-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(108,138,255,0.12);
+    border: 1px solid rgba(108,138,255,0.3);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+    text-transform: uppercase;
+  }
+  .cover-title {
+    font-size: clamp(42px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fff 40%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+  .cover-sub {
+    font-size: 20px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    font-weight: 400;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+  }
+  .cover-meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .cover-meta-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent2);
+  }
+  .cover-meta-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* ===== SLIDE 2: OVERVIEW GRID ===== */
+  .grid-3x3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    flex: 1;
+    align-content: center;
+  }
+  .skill-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .skill-card:hover::before { opacity: 1; }
+  .skill-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .skill-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .skill-cat {
+    font-size: 11px;
+    color: var(--muted);
+    background: rgba(255,255,255,0.05);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    width: fit-content;
+  }
+  .skill-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .slide-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .slide-h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 28px;
+    line-height: 1.2;
+  }
+
+  /* ===== SKILL DETAIL SLIDES ===== */
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    flex: 1;
+    align-items: start;
+    padding-top: 10px;
+  }
+  .detail-left { display: flex; flex-direction: column; gap: 20px; }
+  .detail-right { display: flex; flex-direction: column; gap: 16px; }
+  .detail-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    width: fit-content;
+  }
+  .badge-research { background: rgba(108,138,255,0.15); color: var(--accent); border: 1px solid rgba(108,138,255,0.3); }
+  .badge-productivity { background: rgba(0,212,170,0.15); color: var(--accent2); border: 1px solid rgba(0,212,170,0.3); }
+  .badge-devops { background: rgba(255,127,86,0.15); color: var(--accent3); border: 1px solid rgba(255,127,86,0.3); }
+  .badge-autonomous { background: rgba(245,200,66,0.15); color: var(--gold); border: 1px solid rgba(245,200,66,0.3); }
+  .badge-creative { background: rgba(180,120,255,0.15); color: #B478FF; border: 1px solid rgba(180,120,255,0.3); }
+  .badge-development { background: rgba(80,210,160,0.15); color: #50D2A0; border: 1px solid rgba(80,210,160,0.3); }
+  .detail-h1 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .detail-h1 span { color: var(--accent); }
+  .detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .detail-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .detail-section-content {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .trigger-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .trigger-box code {
+    font-size: 13px;
+    color: var(--accent2);
+    font-weight: 600;
+  }
+  .scenario-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .scenario-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .scenario-item::before {
+    content: '→';
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .code-block {
+    background: #0D1117;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: #79C0FF;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .warning-box {
+    background: rgba(255,127,86,0.08);
+    border: 1px solid rgba(255,127,86,0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--accent3);
+    line-height: 1.5;
+  }
+  .info-box {
+    background: rgba(0,212,170,0.08);
+    border: 1px solid rgba(0,212,170,0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--accent2);
+    line-height: 1.5;
+  }
+
+  /* ===== SLIDE: FULL TABLE ===== */
+  .table-wrap { flex: 1; overflow: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(30,37,64,0.6);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:hover td { background: rgba(108,138,255,0.04); }
+  .td-num { color: var(--accent); font-weight: 700; width: 40px; }
+  .td-skill { font-weight: 700; color: #fff; }
+  .td-cat { font-size: 11px; }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .tag-research { background: rgba(108,138,255,0.15); color: var(--accent); }
+  .tag-prod { background: rgba(0,212,170,0.15); color: var(--accent2); }
+  .tag-devops { background: rgba(255,127,86,0.15); color: var(--accent3); }
+  .tag-auto { background: rgba(245,200,66,0.15); color: var(--gold); }
+  .tag-creative { background: rgba(180,120,255,0.15); color: #B478FF; }
+  .tag-dev { background: rgba(80,210,160,0.15); color: #50D2A0; }
+
+  /* ===== CLOSING SLIDE ===== */
+  .closing-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, #0F1A30 0%, var(--bg) 70%);
+  }
+  .closing-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+  }
+  .closing-h1 {
+    font-size: 52px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .closing-p {
+    font-size: 20px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+  .closing-tags {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .closing-tag {
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    color: var(--text);
+    background: var(--card);
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="progress-bar" id="progress"></div>
+  <div class="brand">Hermes Skills</div>
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide cover-slide active" data-slide="1">
+    <div class="cover-badge">🚀 Agent Skills 全套指南</div>
+    <h1 class="cover-title">9大AgentSkills<br>使用手册</h1>
+    <p class="cover-sub">触发方式 × 使用场景 × 具体实例</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-num">9</span>
+        <span class="cover-meta-label">Skills</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-num">6</span>
+        <span class="cover-meta-label">分类</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-num">∞</span>
+        <span class="cover-meta-label">使用场景</span>
+      </div>
+    </div>
+    <div class="slide-number">01 / 15</div>
+  </div>
+
+  <!-- SLIDE 2: OVERVIEW 3x3 GRID -->
+  <div class="slide" data-slide="2">
+    <div class="slide-title">Overview</div>
+    <h1 class="slide-h1">9大Skills全景图</h1>
+    <div class="grid-3x3">
+      <div class="skill-card">
+        <span class="skill-num">#01</span>
+        <span class="skill-name">Agent Reach</span>
+        <span class="skill-cat">🔬 研究</span>
+        <span class="skill-desc">全网AI Agent情报站，GitHub热门项目调研</span>
+      </div>
+      <div class="skill-card">
+        <span class="skill-num">#02</span>
+        <span class="skill-name">YouTube Watcher</span>
+        <span class="skill-cat">🎬 媒体</span>
+        <span class="skill-desc">YouTube视频字幕提取，内容一键转文字</span>
+      </div>
+      <div class="skill-card">
+        <span class="skill-num">#03</span>
+        <span class="skill-name">Summarize</span>
+        <span class="skill-cat">📝 总结</span>
+        <span class="skill-desc">网页·PDF·图片·音频·视频，万物皆可摘要</span>
+      </div>
+      <div class="skill-card">
+        <span class="skill-num">#04</span>
+        <span class="skill-name">Humanizer</span>
+        <span class="skill-cat">✍️ 润色</span>
+        <span class="skill-desc">AI文案秒变人话，消除套路感</span>
+      </div>
+      <div class="skill-card">
+        <span class="skill-num">#05</span>
+        <span class="skill-name">Skill Vetter</span>
+        <span class="skill-cat">🔒 安全</span>
+        <span class="skill-desc">安装前必扫，代码审计+风险评级</span>
+      </div>
+      <div class="skill-card">
+        <span class="skill-num">#06</span>
+        <span class="skill-name">Self-Improving</span>
+        <span class="skill-cat">🧠 记忆</span>
+        <span class="skill-desc">自动记录纠正，越用越懂你</span>
+      </div>
+      <div class="skill-card">
+        <span class="skill-num">#07</span>
+        <span class="skill-name">Tavily Search</span>
+        <span class="skill-cat">🔍 搜索</span>
+        <span class="skill-desc">AI优化精准搜索，直接给答案</span>
+      </div>
+      <div class="skill-card">
+        <span class="skill-num">#08</span>
+        <span class="skill-name">宝玉图文系列</span>
+        <span class="skill-cat">🎨 创意</span>
+        <span class="skill-desc">信息图+社交帖子，社交媒体内容神器</span>
+      </div>
+      <div class="skill-card">
+        <span class="skill-num">#09</span>
+        <span class="skill-name">Frontend Design</span>
+        <span class="skill-cat">💻 开发</span>
+        <span class="skill-desc">快速出生产级前端原型界面</span>
+      </div>
+    </div>
+    <div class="slide-number">02 / 15</div>
+  </div>
+
+  <!-- SLIDE 3: Agent Reach -->
+  <div class="slide" data-slide="3">
+    <div class="slide-title">Skill #01 · 研究</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div>
+          <span class="detail-badge badge-research">🔬 研究</span>
+        </div>
+        <h1 class="detail-h1">Agent<br><span>Reach</span></h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">全网AI Agent情报站，并行多AI交叉验证调研，发现最优方案</p>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">触发词</span>
+          <div class="trigger-box">
+            <code>Agent Reach</code> · <code>研究AI Agent</code> · <code>GitHub调研</code>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">使用场景</span>
+          <div class="scenario-box">
+            <div class="scenario-item">研究GitHub上前50的AI Agent开源项目</div>
+            <div class="scenario-item">找Manus的免费开源替代方案</div>
+            <div class="scenario-item">DeepSeek有哪些好用的Agent工具？</div>
+            <div class="scenario-item">Claude/MiniMax/Gemini横向对比选型</div>
+          </div>
+        </div>
+        <div class="warning-box">
+          ⚡ 使用方式：直接告诉我研究需求，我会调用Agent Reach执行深度调研
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">03 / 15</div>
+  </div>
+
+  <!-- SLIDE 4: YouTube Watcher -->
+  <div class="slide" data-slide="4">
+    <div class="slide-title">Skill #02 · 媒体</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div><span class="detail-badge badge-research">🎬 媒体</span></div>
+        <h1 class="detail-h1">YouTube<br><span>Watcher</span></h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">抓取YouTube视频字幕，转为结构化文字用于总结、问答、信息提取</p>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">触发词</span>
+          <div class="trigger-box">
+            <code>YouTube Watcher</code> · <code>油管</code> · <code>提取字幕</code> · <code>看视频</code>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">使用场景</span>
+          <div class="scenario-box">
+            <div class="scenario-item">"帮我看这个视频说了什么" + YouTube链接</div>
+            <div class="scenario-item">提取教程视频的核心步骤</div>
+            <div class="scenario-item">访谈视频关键观点提取</div>
+            <div class="scenario-item">行业访谈快速消化（开车时当播客听）</div>
+          </div>
+        </div>
+        <div class="code-block">python3 {baseDir}/scripts/get_transcript.py
+  "YouTube链接"</div>
+        <div class="warning-box">
+          ⚠️ 前置依赖：需要安装 yt-dlp<br>
+          <code>brew install yt-dlp</code>
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">04 / 15</div>
+  </div>
+
+  <!-- SLIDE 5: Summarize -->
+  <div class="slide" data-slide="5">
+    <div class="slide-title">Skill #03 · 总结</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div><span class="detail-badge badge-research">📝 总结</span></div>
+        <h1 class="detail-h1">Summarize</h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">总结网页、PDF、图片、音频、YouTube视频为干净、结构化的摘要</p>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">触发词</span>
+          <div class="trigger-box">
+            <code>Summarize</code> · <code>总结</code> · <code>摘要</code> · <code>提炼要点</code>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">使用场景</span>
+          <div class="scenario-box">
+            <div class="scenario-item">"帮我总结这篇长文" + 发送链接</div>
+            <div class="scenario-item">"这个PDF的核心结论是什么？"</div>
+            <div class="scenario-item">"这个播客40分钟说了什么？"</div>
+            <div class="scenario-item">"这张图里的关键信息是什么？"（图片分析）</div>
+          </div>
+        </div>
+        <div class="info-box">
+          💡 使用方式：直接发链接或上传文件给我，说"帮我总结"
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">05 / 15</div>
+  </div>
+
+  <!-- SLIDE 6: Humanizer -->
+  <div class="slide" data-slide="6">
+    <div class="slide-title">Skill #04 · 润色</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div><span class="detail-badge badge-productivity">✍️ 润色</span></div>
+        <h1 class="detail-h1">Humanizer</h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">消除AI生成的套路感——过度使用的连接词、过于工整的段落、生硬措辞。AI文案秒变人话。</p>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">触发词</span>
+          <div class="trigger-box">
+            <code>Humanizer</code> · <code>润色</code> · <code>更像人写的</code> · <code>去AI味</code>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">使用场景</span>
+          <div class="scenario-box">
+            <div class="scenario-item">AI写完文案后："帮我润色一下，更像人话"</div>
+            <div class="scenario-item">"这段太像ChatGPT写的了，帮我改改"</div>
+            <div class="scenario-item">朋友圈文案、微博、知乎回答润色</div>
+            <div class="scenario-item">私信/邮件语气优化，更自然</div>
+          </div>
+        </div>
+        <div class="info-box">
+          💡 使用方式：直接发文字给我，说"帮我润色"
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">06 / 15</div>
+  </div>
+
+  <!-- SLIDE 7: Skill Vetter -->
+  <div class="slide" data-slide="7">
+    <div class="slide-title">Skill #05 · 安全</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div><span class="detail-badge badge-devops">🔒 安全</span></div>
+        <h1 class="detail-h1">Skill<br><span>Vetter</span></h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">安装新Skill前的安全门卫——代码审计+风险评级，避免引入恶意代码</p>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">触发词</span>
+          <div class="trigger-box">
+            <code>Skill Vetter</code> · <code>扫描</code> · <code>安全检查</code> · <code>安装前审查</code>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">扫描维度</span>
+          <div class="scenario-box">
+            <div class="scenario-item">来源信誉：作者/仓库背景评估</div>
+            <div class="scenario-item">代码审计：检测可疑curl/eval/SSH访问</div>
+            <div class="scenario-item">混淆代码检测</div>
+            <div class="scenario-item">权限范围评估</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">风险等级</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <span style="background:rgba(0,212,170,0.15);color:var(--accent2);padding:4px 12px;border-radius:6px;font-size:13px;font-weight:700;">🟢 低风险</span>
+            <span style="background:rgba(245,200,66,0.15);color:var(--gold);padding:4px 12px;border-radius:6px;font-size:13px;font-weight:700;">🟡 中风险</span>
+            <span style="background:rgba(255,127,86,0.15);color:var(--accent3);padding:4px 12px;border-radius:6px;font-size:13px;font-weight:700;">🔴 高风险</span>
+            <span style="background:rgba(255,60,60,0.15);color:#FF3C3C;padding:4px 12px;border-radius:6px;font-size:13px;font-weight:700;">⛔ 极高风险</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">07 / 15</div>
+  </div>
+
+  <!-- SLIDE 8: Self-Improving Agent -->
+  <div class="slide" data-slide="8">
+    <div class="slide-title">Skill #06 · 记忆</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div><span class="detail-badge badge-autonomous">🧠 记忆</span></div>
+        <h1 class="detail-h1">Self-<br><span>Improving</span><br>Agent</h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">自动记录执行错误和用户纠正，形成反馈闭环，像你的专属"错题本"，越用越懂你</p>
+        </div>
+        <div class="info-box">
+          ⚡ 特点：无需主动调用！平时使用中自动工作
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">工作原理</span>
+          <div class="scenario-box">
+            <div class="scenario-item">你纠正我一次 → 我记住，下次不再犯</div>
+            <div class="scenario-item">执行出错 → 自动记录原因</div>
+            <div class="scenario-item">长期沉淀 → 形成你的专属偏好模型</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">效果</span>
+          <div class="scenario-box">
+            <div class="scenario-item">犯错率显著降低</div>
+            <div class="scenario-item">逐渐适应你的表达习惯</div>
+            <div class="scenario-item">长期使用 = 更懂你的私人助理</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">08 / 15</div>
+  </div>
+
+  <!-- SLIDE 9: Tavily Search -->
+  <div class="slide" data-slide="9">
+    <div class="slide-title">Skill #07 · 搜索</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div><span class="detail-badge badge-research">🔍 搜索</span></div>
+        <h1 class="detail-h1">Tavily<br><span>Search</span></h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">AI优化的精准搜索引擎，返回结构化高相关结果，不只是给你一堆链接让你自己筛</p>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">触发词</span>
+          <div class="trigger-box">
+            <code>Tavily</code> · <code>深度调研</code> · <code>技术选型</code> · <code>搜索研究</code>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">使用场景</span>
+          <div class="scenario-box">
+            <div class="scenario-item">"帮我用Tavily研究RAG和Agent的区别"</div>
+            <div class="scenario-item">"搜索亚马逊VC账号最新政策"</div>
+            <div class="scenario-item">"深度调研肌酸市场最新竞品动态"</div>
+            <div class="scenario-item">技术选型、多方案横向对比</div>
+          </div>
+        </div>
+        <div class="warning-box">
+          🔑 需要API Key（免费注册送$10额度）<br>
+          注册地址：tavily.com
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">09 / 15</div>
+  </div>
+
+  <!-- SLIDE 10: Baoyu Infographic -->
+  <div class="slide" data-slide="10">
+    <div class="slide-title">Skill #08a · 创意</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div><span class="detail-badge badge-creative">🎨 创意</span></div>
+        <h1 class="detail-h1">Baoyu<br><span>Infographic</span></h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">专业信息图生成器，21种版式可选，把数据报告一键变成可视化图表</p>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">触发词</span>
+          <div class="trigger-box">
+            <code>Infographic</code> · <code>信息图</code> · <code>可视化图表</code> · <code>图文并茂</code>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">使用场景</span>
+          <div class="scenario-box">
+            <div class="scenario-item">"帮我做个数据可视化信息图"</div>
+            <div class="scenario-item">"把这份报告变成一张图"</div>
+            <div class="scenario-item">把Excel数据转成小红书/朋友圈图片</div>
+            <div class="scenario-item">亚马逊选品数据可视化展示</div>
+          </div>
+        </div>
+        <div class="info-box">
+          💡 21种专业版式：对比型、数据型、时间线、地图、排行榜…
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">10 / 15</div>
+  </div>
+
+  <!-- SLIDE 11: Baoyu Post to X -->
+  <div class="slide" data-slide="11">
+    <div class="slide-title">Skill #08b · 社交</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div><span class="detail-badge badge-creative">✈️ 社交</span></div>
+        <h1 class="detail-h1">Baoyu<br><span>Post to X</span></h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">社交帖子生成器，支持多语言、多风格，一键生成适合X/Twitter的推广帖子</p>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">触发词</span>
+          <div class="trigger-box">
+            <code>Post to X</code> · <code>发推</code> · <code>社交帖子</code> · <code>X推文</code>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">使用场景</span>
+          <div class="scenario-box">
+            <div class="scenario-item">"帮我写一条产品推广推文"</div>
+            <div class="scenario-item">"把这段话转成适合X平台的帖子"</div>
+            <div class="scenario-item">多语言版本：中文/英文/日文</div>
+            <div class="scenario-item">不同风格：专业/轻松/段子手</div>
+          </div>
+        </div>
+        <div class="info-box">
+          💡 支持批量生成，一套内容多平台适配
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">11 / 15</div>
+  </div>
+
+  <!-- SLIDE 12: Frontend Design -->
+  <div class="slide" data-slide="12">
+    <div class="slide-title">Skill #09 · 开发</div>
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div><span class="detail-badge badge-development">💻 开发</span></div>
+        <h1 class="detail-h1">Frontend<br><span>Design</span></h1>
+        <div class="detail-section">
+          <span class="detail-section-title">一句话</span>
+          <p class="detail-section-content">根据描述快速生成生产级前端界面，54种真实设计系统参考，不是"能用就行"而是"可以直接上线"</p>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">触发词</span>
+          <div class="trigger-box">
+            <code>Frontend Design</code> · <code>前端原型</code> · <code>界面设计</code> · <code>高保真原型</code>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="detail-section">
+          <span class="detail-section-title">使用场景</span>
+          <div class="scenario-box">
+            <div class="scenario-item">"帮我做个登录页面"</div>
+            <div class="scenario-item">"做个仪表盘界面"</div>
+            <div class="scenario-item">"把这个Figma设计用代码实现"</div>
+            <div class="scenario-item">快速原型：内部工具、数据展示页</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <span class="detail-section-title">设计系统参考</span>
+          <div class="scenario-box">
+            <div class="scenario-item">Vercel / Linear / Stripe / Tailwind UI</div>
+            <div class="scenario-item">Radix / shadcn/ui 组件库</div>
+            <div class="scenario-item">54种真实生产级设计系统</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">12 / 15</div>
+  </div>
+
+  <!-- SLIDE 13: 工作流 -->
+  <div class="slide" data-slide="13">
+    <div class="slide-title">Workflow</div>
+    <h1 class="slide-h1">日常工作流组合</h1>
+    <div style="display:flex;flex-direction:column;gap:20px;flex:1;justify-content:center;">
+      <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:16px;">
+        <div class="scenario-box" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:8px;">🔍</div>
+          <div style="font-weight:700;font-size:15px;">Tavily Search</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">精准搜索调研</div>
+        </div>
+        <div style="font-size:24px;color:var(--accent);font-weight:700;">→</div>
+        <div class="scenario-box" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:8px;">📝</div>
+          <div style="font-weight:700;font-size:15px;">Summarize</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">快速消化内容</div>
+        </div>
+        <div style="font-size:24px;color:var(--accent);font-weight:700;">→</div>
+        <div class="scenario-box" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:8px;">✍️</div>
+          <div style="font-weight:700;font-size:15px;">Humanizer</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">润色成人话</div>
+        </div>
+        <div style="font-size:24px;color:var(--accent);font-weight:700;">→</div>
+        <div class="scenario-box" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:8px;">🎨</div>
+          <div style="font-weight:700;font-size:15px;">宝玉图文</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">社交媒体发布</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px;">
+        <div class="scenario-box">
+          <div style="font-weight:700;margin-bottom:8px;color:var(--accent2);">🎬 视频学习流</div>
+          <div style="font-size:13px;color:var(--muted);">YouTube视频 → 提取字幕 → Summarize总结 → Humanizer润色成笔记</div>
+        </div>
+        <div class="scenario-box">
+          <div style="font-weight:700;margin-bottom:8px;color:var(--accent3);">🔬 深度研究流</div>
+          <div style="font-size:13px;color:var(--muted);">Agent Reach调研 → Tavily深度搜索 → Summarize提炼 → DeckOS报告</div>
+        </div>
+        <div class="scenario-box">
+          <div style="font-weight:700;margin-bottom:8px;color:var(--gold);">💻 原型开发流</div>
+          <div style="font-size:13px;color:var(--muted);">Frontend Design → 快速原型 → Skill Vetter扫描 → Self-Improving迭代</div>
+        </div>
+        <div class="scenario-box">
+          <div style="font-weight:700;margin-bottom:8px;color:#B478FF;">🔒 安全习惯</div>
+          <div style="font-size:13px;color:var(--muted);">安装任何新Skill前 → Skill Vetter扫描 → 确认安全再安装</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-number">13 / 15</div>
+  </div>
+
+  <!-- SLIDE 14: FULL TABLE -->
+  <div class="slide" data-slide="14">
+    <div class="slide-title">Reference</div>
+    <h1 class="slide-h1">9大Skills速查表</h1>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Skill名称</th>
+            <th>分类</th>
+            <th>触发词</th>
+            <th>一句话用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-num">01</td>
+            <td class="td-skill">Agent Reach</td>
+            <td><span class="tag tag-research">🔬 研究</span></td>
+            <td>Agent Reach / GitHub调研 / AI工具情报</td>
+            <td>全网AI Agent情报站</td>
+          </tr>
+          <tr>
+            <td class="td-num">02</td>
+            <td class="td-skill">YouTube Watcher</td>
+            <td><span class="tag tag-research">🎬 媒体</span></td>
+            <td>油管 / 提取字幕 / 看视频</td>
+            <td>视频内容一键转文字</td>
+          </tr>
+          <tr>
+            <td class="td-num">03</td>
+            <td class="td-skill">Summarize</td>
+            <td><span class="tag tag-research">📝 总结</span></td>
+            <td>总结 / 摘要 / 提炼要点</td>
+            <td>万物皆可一键摘要</td>
+          </tr>
+          <tr>
+            <td class="td-num">04</td>
+            <td class="td-skill">Humanizer</td>
+            <td><span class="tag tag-prod">✍️ 润色</span></td>
+            <td>润色 / 去AI味 / 人话</td>
+            <td>AI文案秒变人话</td>
+          </tr>
+          <tr>
+            <td class="td-num">05</td>
+            <td class="td-skill">Skill Vetter</td>
+            <td><span class="tag tag-devops">🔒 安全</span></td>
+            <td>扫描 / 安全检查 / 安装前审查</td>
+            <td>安装前必扫风险</td>
+          </tr>
+          <tr>
+            <td class="td-num">06</td>
+            <td class="td-skill">Self-Improving</td>
+            <td><span class="tag tag-auto">🧠 记忆</span></td>
+            <td>自动生效（无需触发）</td>
+            <td>越用越懂你</td>
+          </tr>
+          <tr>
+            <td class="td-num">07</td>
+            <td class="td-skill">Tavily Search</td>
+            <td><span class="tag tag-research">🔍 搜索</span></td>
+            <td>深度调研 / 技术选型 / 搜索研究</td>
+            <td>精准搜索直接给答案</td>
+          </tr>
+          <tr>
+            <td class="td-num">08</td>
+            <td class="td-skill">宝玉图文系列</td>
+            <td><span class="tag tag-creative">🎨 创意</span></td>
+            <td>信息图 / 发推 / 社交帖子</td>
+            <td>社交媒体内容神器</td>
+          </tr>
+          <tr>
+            <td class="td-num">09</td>
+            <td class="td-skill">Frontend Design</td>
+            <td><span class="tag tag-dev">💻 开发</span></td>
+            <td>前端原型 / 界面设计 / 高保真原型</td>
+            <td>快速出生产级界面</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide-number">14 / 15</div>
+  </div>
+
+  <!-- SLIDE 15: CLOSING -->
+  <div class="slide closing-slide" data-slide="15">
+    <div class="closing-icon">🚀</div>
+    <h1 class="closing-h1">覆盖全链路</h1>
+    <p class="closing-p">调研 → 消化 → 创作 → 发布 → 迭代<br>9大Skills帮你打通AI工作流的每一个环节</p>
+    <div class="closing-tags">
+      <span class="closing-tag">🔍 调研</span>
+      <span class="closing-tag">📝 消化</span>
+      <span class="closing-tag">✍️ 创作</span>
+      <span class="closing-tag">🎨 发布</span>
+      <span class="closing-tag">🧠 迭代</span>
+    </div>
+    <div class="slide-number">15 / 15</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn" onclick="prevSlide()">← 上一页</button>
+  <span class="page-indicator" id="pageInd">1 / 15</span>
+  <button class="nav-btn primary" onclick="nextSlide()">下一页 →</button>
+  <button class="nav-btn" onclick="toggleFullscreen()">⛶ 全屏</button>
+</div>
+
+<script>
+  let current = 1;
+  const total = 15;
+
+  function showSlide(n) {
+    if (n < 1) n = 1;
+    if (n > total) n = total;
+    current = n;
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.querySelector(`[data-slide="${n}"]`).classList.add('active');
+    document.getElementById('pageInd').textContent = `${n} / ${total}`;
+    document.getElementById('progress').style.width = `${(n / total) * 100}%`;
+  }
+
+  function nextSlide() { showSlide(current + 1); }
+  function prevSlide() { showSlide(current - 1); }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+    if (e.key === 'Home') { e.preventDefault(); showSlide(1); }
+    if (e.key === 'End') { e.preventDefault(); showSlide(total); }
+    if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+  });
+
+  // Touch/swipe support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+  });
+
+  showSlide(1);
+</script>
+</body>
+</html>
